@@ -477,7 +477,7 @@ export default function UpiPayout() {
               <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-8 relative overflow-hidden group h-full">
                 <div className="flex items-center justify-between mb-8">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Quick Transfer</h3>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">UPI Payout</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Instant Transfer Engine</p>
                   </div>
                   <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm">
@@ -486,8 +486,6 @@ export default function UpiPayout() {
                 </div>
 
                 <div className="space-y-6">
-
-
                   <div className="space-y-2">
 
                     <Select

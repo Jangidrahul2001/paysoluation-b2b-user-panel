@@ -148,7 +148,7 @@ export default function AepsDashboard() {
       onSuccess: (res) => {
 
         if (res?.success) {
-          console.log(activeService,res,"pppppcheckkk")
+          console.log(activeService, res, "pppppcheckkk")
           if (activeService === 'balance') {
             setRecieptModalData({
               title: "Balance Enquiry",
@@ -190,8 +190,8 @@ export default function AepsDashboard() {
               isOpen: true
             });
           }
-          else{
-             setRecieptModalData({
+          else {
+            setRecieptModalData({
               title: "Withdrawl Successful",
               date: res?.data?.timestamp,
               subTitleLabel: "Withdrawal Amount",
@@ -201,12 +201,12 @@ export default function AepsDashboard() {
                 "Aadhaar Number": res?.data?.data?.aadhaarNumber || serviceFormData?.aadhaar,
                 "Transaction Id": res?.data?.transactionId || "",
                 status: "Transaction Successful",
-               
+
               },
               isOpen: true
             });
           }
-        
+
         }
         setIsLoading(false);
         toast.success(res.message || 'Transaction Successful');
@@ -295,7 +295,7 @@ export default function AepsDashboard() {
   if (profileLoading || (!profile && !profileError)) {
     return (
       <PageLayout
-        title="AePS Services Dashboard"
+        title="Aadhaar Enabled Payment System (AePS)"
         subtitle="Complete Transactions with Unified Aadhaar Gateway"
         className="max-w-[1600px] mx-auto py-6"
       >
@@ -361,13 +361,13 @@ export default function AepsDashboard() {
     );
   }
 
-    if (rejectRequest("aeps", profile?.requestedService)) return (<RejectedRequest service="aeps" pipeline="aeps1" />)
+  if (rejectRequest("aeps", profile?.requestedService)) return (<RejectedRequest service="aeps" pipeline="aeps1" />)
   // Permission check
   if (!checkAssignedService("aeps", "aeps1", profile?.assignedServices)) return (<NoPermission service="aeps" pipeline="aeps1" />)
 
   return (
     <PageLayout
-      title="AePS Services Dashboard"
+      title="Aadhaar Enabled Payment System (AePS)"
       subtitle="Complete Transactions with Unified Aadhaar Gateway"
       className="max-w-[1600px] mx-auto py-6"
     >
@@ -458,8 +458,8 @@ export default function AepsDashboard() {
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Customer Mobile</label>
                   <Input
+                    label='Customer Mobile'
                     icon={Smartphone}
                     value={serviceFormData.mobile}
                     onChange={(e) => {
@@ -468,14 +468,13 @@ export default function AepsDashboard() {
                     }}
                     placeholder="Enter 10 digit number"
                     maxLength={10}
-                    className="h-11 rounded-xl border-slate-200"
                     error={errors.mobile}
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Customer Aadhaar</label>
                   <Input
+                    label='Customer Aadhaar'
                     icon={Fingerprint}
                     value={serviceFormData.aadhaar}
                     onChange={(e) => {
@@ -485,14 +484,13 @@ export default function AepsDashboard() {
                     placeholder="000000000000"
                     maxLength={12}
                     error={errors.aadhaar}
-                    className="h-11 rounded-xl border-slate-200 text-lg tracking-widest font-bold"
                   />
                 </div>
 
                 {activeService === 'withdrawal' && (
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Withdrawal Amount</label>
                     <Input
+                      label='Withdrawal Amount'
                       icon={Banknote}
                       value={serviceFormData.amount}
                       onChange={(e) => {
@@ -500,7 +498,6 @@ export default function AepsDashboard() {
                         setErrors({ ...errors, amount: "" })
                       }}
                       placeholder="Enter amount (Minimum ₹100)"
-                      className="h-11 rounded-xl border-slate-200 font-bold"
                       error={errors.amount}
                     />
                   </div>

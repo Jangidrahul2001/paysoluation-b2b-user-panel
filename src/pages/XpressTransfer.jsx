@@ -463,7 +463,7 @@ export default function XpressTransfer() {
 
   return (
     <PageLayout
-      title="Xpress Transfer "
+      title="Xpress Transfer"
       subtitle="Execute instant money transfers to any bank account with real-time processing"
       actions={
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
@@ -492,7 +492,7 @@ export default function XpressTransfer() {
               <div className="bg-white rounded-[2.5rem] border border-slate-200 shadow-sm p-8 relative overflow-hidden group h-full">
                 <div className="flex items-center justify-between mb-8">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Quick Transfer</h3>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Xpress Payout</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Instant Transfer Engine</p>
                   </div>
                   <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm">

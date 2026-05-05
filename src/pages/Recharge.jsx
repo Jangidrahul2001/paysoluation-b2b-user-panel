@@ -689,7 +689,7 @@ export default function Recharge() {
             >
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Order Details</h3>
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">Recharge Details</h3>
                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Enter details to proceed</p>
                 </div>
                 <div className="w-12 h-12 rounded-xl bg-indigo-600/5 text-indigo-600 flex items-center justify-center border border-indigo-500/10 transition-all hover:scale-105 shadow-sm">
@@ -741,11 +741,11 @@ export default function Recharge() {
                 {/* Service Provider */}
                 <div className="space-y-2">
                   <label className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-400 ml-1">
-                    Service Provider
+                    Select Operator
                   </label>
                   <div className="relative">
                     <Select
-                      placeholder="Identify network"
+                      placeholder="Select Operator"
                       options={operators}
                       value={selectedOperator}
                       onChange={(val) => {
@@ -805,7 +805,7 @@ export default function Recharge() {
                   <p
                     onClick={() => setIsTopDescExpanded(!isTopDescExpanded)}
                     className={cn(
-                      "text-[10px] text-indigo-500 cursor-pointer",
+                      "text-[10px] text-green-600 cursor-pointer font-semibold",
                       isTopDescExpanded ? "line-clamp-none" : "line-clamp-2"
                     )}
                   >

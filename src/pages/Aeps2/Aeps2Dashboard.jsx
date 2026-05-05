@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-    CreditCard,
-    Banknote,
-    History,
-    Fingerprint,
-    Smartphone,
-    Info
+  CreditCard,
+  Banknote,
+  History,
+  Fingerprint,
+  Smartphone,
+  Info
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/Button';
@@ -16,15 +16,15 @@ import { Input } from '../../components/ui/Input';
 import { cn } from '../../lib/utils';
 import { Card } from '../../components/ui/Card';
 import {
-    aadharRegex,
-    checkAssignedService,
-    fetchPublicIp,
-    formatAadharInput,
-    formatNumberInput,
-    formatToINR,
-    handleValidationError,
-    phoneRegex,
-    rejectRequest
+  aadharRegex,
+  checkAssignedService,
+  fetchPublicIp,
+  formatAadharInput,
+  formatNumberInput,
+  formatToINR,
+  handleValidationError,
+  phoneRegex,
+  rejectRequest
 } from '../../utils/helperFunction';
 import { apiEndpoints } from '../../api/apiEndpoints';
 import { useFetch } from '../../hooks/useFetch';
@@ -41,472 +41,470 @@ import ReceiptModal from '../../modal/RecieptModal';
 import RejectedRequest from '../RejectedRequest';
 
 export default function Aeps2Dashboard() {
-    const navigate = useNavigate();
-    const dispatch = useDispatch();
-    const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
-    const [activeService, setActiveService] = useState('inquiry');
-    const [isLoading, setIsLoading] = useState(false);
-    const [bankList, setBankList] = useState([]);
-    const [location, setLocation] = useState({ lat: null, lng: null });
-    // const [responseModal, setResponseModal] = useState({
-    //     isOpen: false,
-    //     data: {},
-    //     type: "inquiry"
-    // });
-    const [recieptModalData, setRecieptModalData] = useState({
-        title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false
-    });
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
+  const [activeService, setActiveService] = useState('inquiry');
+  const [isLoading, setIsLoading] = useState(false);
+  const [bankList, setBankList] = useState([]);
+  const [location, setLocation] = useState({ lat: null, lng: null });
+  // const [responseModal, setResponseModal] = useState({
+  //     isOpen: false,
+  //     data: {},
+  //     type: "inquiry"
+  // });
+  const [recieptModalData, setRecieptModalData] = useState({
+    title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false
+  });
 
-    const [serviceFormData, setServiceFormData] = useState({
-        bank: '',
-        mobile: '',
-        aadhaar: '',
-        amount: ''
-    });
-    const [errors, setErrors] = useState({});
+  const [serviceFormData, setServiceFormData] = useState({
+    bank: '',
+    mobile: '',
+    aadhaar: '',
+    amount: ''
+  });
+  const [errors, setErrors] = useState({});
 
 
 
-    const { refetch: fetchBanks } = useFetch(
-        `${apiEndpoints.aeps2BankList}`,
-        {
-            onSuccess: (data) => {
-                if (data.success && Array.isArray(data.data)) {
-                    const formattedBanks = data.data.map((bank) => ({
-                        label: bank.bankName,
-                        value: bank._id,
-                    }));
-                    setBankList(formattedBanks);
-                }
-            },
-            onError: (error) => {
-                console.error("Error fetching banks:", error);
-            },
+  const { refetch: fetchBanks } = useFetch(
+    `${apiEndpoints.aeps2BankList}`,
+    {
+      onSuccess: (data) => {
+        if (data.success && Array.isArray(data.data)) {
+          const formattedBanks = data.data.map((bank) => ({
+            label: bank.bankName,
+            value: bank._id,
+          }));
+          setBankList(formattedBanks);
+        }
+      },
+      onError: (error) => {
+        console.error("Error fetching banks:", error);
+      },
+    },
+    true,
+  );
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+          });
         },
-        true,
-    );
-
-    useEffect(() => {
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    setLocation({
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude
-                    });
-                },
-                (error) => {
-                    toast.error("Location access is required for AePS transactions.");
-                }
-            );
+        (error) => {
+          toast.error("Location access is required for AePS transactions.");
         }
-    }, []);
+      );
+    }
+  }, []);
 
-    const { post: doAepsService } = usePost(
-        apiEndpoints.aeps2InitiateTransaction,
-        {
-            onSuccess: (res) => {
-                if (res?.data) {
-                    toast.success(res.message || 'Transaction successful');
-                    const selectedBank = bankList.find(bank => bank.value === serviceFormData.bank)
-                    if (activeService === 'inquiry') {
-                        setRecieptModalData({
-                            title: "Balance Enquiry",
-                            date: res?.data?.timestamp,
-                            subTitleLabel: "Available Balance",
-                            subTitleValue: formatToINR(res?.data?.customerBalance),
-                            receiptData: {
-                                Bank: res?.data?.bankName || selectedBank.label || "",
-                                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
-                                "Transaction Id": res?.data?.referenceId || "",
-                                status: "Transaction Successful"
-                            },
-                            isOpen: true
-                        });
-                    }
-                    else if (activeService === 'statement') {
-                        setRecieptModalData({
-                            title: "Mini Statement",
-                            date: res?.data?.timestamp,
-                            receiptData: {
-                                Bank: res?.data?.bankName || selectedBank.label || "",
-                                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
-                                "Transaction Id": res?.data?.referenceId || "",
-                                status: "Transaction Successful",
-                                miniStatement: res?.data?.miniStatement
-                            },
-                            isOpen: true
-                        });
-                    }
-                    else {
-                        setRecieptModalData({
-                            title: "Withdrawal Successful",
-                            date: res?.data?.timestamp,
-                            subTitleLabel: "Amount",
-                            subTitleValue: formatToINR(serviceFormData?.amount || 0),
-                            receiptData: {
-                                Bank: res?.data?.bankName || selectedBank.label || "",
-                                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
-                                "Transaction Id": res?.data?.referenceId || "",
-                                status: "Transaction Successful",
-                            },
-                            isOpen: true
-                        });
-
-                    }
-                    // setResponseModal({
-                    //     isOpen: true,
-                    //     data: res?.data || {},
-                    //     type: activeService
-                    // });
-                }
-                setIsLoading(false);
-                if (res.success) {
-                    toast.success(res.message || 'Transaction successful');
-                } else {
-                    toast.error(res.message || 'Transaction failed');
-                }
-                dispatch(fetchWallet());
-            },
-            onError: (error) => {
-                if (error.code) {
-                    if (error.code === "AEPS_LOGIN_REQUIRED") {
-                        navigate("/aeps2/aeps-daily-login", { replace: true });
-                        toast.error(error.message || "Login required for AEPS services. Please login to continue.");
-                        return;
-                    }
-                }
-                setIsLoading(false);
-                toast.error(handleValidationError(error) || "Transaction failed");
-            }
-        }
-    );
-
-    const handleServiceSubmit = async (e) => {
-        e.preventDefault();
-        let tempsErrors = {};
-
-        if (location.lat === null || location.lng === null) {
-            return toast.error("Location access is required for AePS transactions. Please enable location and try again.");
-        }
-
-        if (!serviceFormData.bank) {
-            tempsErrors.bank = "Please select a bank";
-        }
-        if (!phoneRegex.test(serviceFormData.mobile)) {
-            tempsErrors.mobile = "Please enter a valid mobile number";
-        }
-        if (!aadharRegex.test(serviceFormData.aadhaar)) {
-            tempsErrors.aadhaar = "Please enter a valid 12-digit Aadhaar number";
-        }
-        if (activeService === 'withdraw' && !serviceFormData.amount) {
-            tempsErrors.amount = "Please enter amount";
-        } else if (serviceFormData.amount && (isNaN(serviceFormData.amount) || Number(serviceFormData.amount) < 100 || !(Number(serviceFormData.amount) % 50 === 0))) {
-            tempsErrors.amount = "Please enter a valid amount should be multiple of 50 (Minimum ₹100)";
-        }
-
-        setErrors(tempsErrors);
-
-        if (Object.keys(tempsErrors).length > 0) {
-            return toast.error("Please fill in all required fields correctly");
-        }
-
-
-
-        setIsLoading(true);
-        const device = await discoverDevice();
-
-        if (!device.success) {
-            setIsLoading(false);
-            toast.error(device.message);
-            return;
-        }
-        const capture = await captureFingerprint(false);
-
-        if (capture.success) {
-
-            const clientIp = await fetchPublicIp();
-            if (!clientIp) {
-                toast.error("Unable to fetch client IP address. Please check your internet connection and try again.");
-                setIsLoading(false);
-                return;
-            }
-            doAepsService({
-                serviceType: activeService,
-                bankId: serviceFormData.bank,
-                mobile: serviceFormData.mobile,
-                aadhaar: serviceFormData.aadhaar,
-                amount: activeService === 'withdraw' ? serviceFormData.amount : 0,
-                latitude: location.lat,
-                longitude: location.lng,
-                pidData: capture.data,
-                sourceIp: clientIp
-
+  const { post: doAepsService } = usePost(
+    apiEndpoints.aeps2InitiateTransaction,
+    {
+      onSuccess: (res) => {
+        if (res?.data) {
+          toast.success(res.message || 'Transaction successful');
+          const selectedBank = bankList.find(bank => bank.value === serviceFormData.bank)
+          if (activeService === 'inquiry') {
+            setRecieptModalData({
+              title: "Balance Enquiry",
+              date: res?.data?.timestamp,
+              subTitleLabel: "Available Balance",
+              subTitleValue: formatToINR(res?.data?.customerBalance),
+              receiptData: {
+                Bank: res?.data?.bankName || selectedBank.label || "",
+                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
+                "Transaction Id": res?.data?.referenceId || "",
+                status: "Transaction Successful"
+              },
+              isOpen: true
+            });
+          }
+          else if (activeService === 'statement') {
+            setRecieptModalData({
+              title: "Mini Statement",
+              date: res?.data?.timestamp,
+              receiptData: {
+                Bank: res?.data?.bankName || selectedBank.label || "",
+                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
+                "Transaction Id": res?.data?.referenceId || "",
+                status: "Transaction Successful",
+                miniStatement: res?.data?.miniStatement
+              },
+              isOpen: true
+            });
+          }
+          else {
+            setRecieptModalData({
+              title: "Withdrawal Successful",
+              date: res?.data?.timestamp,
+              subTitleLabel: "Amount",
+              subTitleValue: formatToINR(serviceFormData?.amount || 0),
+              receiptData: {
+                Bank: res?.data?.bankName || selectedBank.label || "",
+                "Aadhaar Number": res?.data?.aadhar || serviceFormData?.aadhaar,
+                "Transaction Id": res?.data?.referenceId || "",
+                status: "Transaction Successful",
+              },
+              isOpen: true
             });
 
-        } else {
-            setIsLoading(false);
-            toast.error(capture.message);
+          }
+          // setResponseModal({
+          //     isOpen: true,
+          //     data: res?.data || {},
+          //     type: activeService
+          // });
         }
-    };
-
-    if (profileLoading || (!profile && !profileError)) {
-        return (
-            <PageLayout
-                title="AePS Services Dashboard"
-                subtitle="Complete Transactions with Unified Aadhaar Gateway"
-                className="max-w-[1600px] mx-auto py-6"
-            >
-                <div className="space-y-6">
-                    <Card className="p-0 overflow-hidden border-slate-100 shadow-sm bg-white">
-                        {/* Header Section Skeleton */}
-                        <div className="px-8 py-6 border-b border-slate-50 flex flex-col items-center lg:flex-row xl:items-center justify-between gap-6">
-                            <div className="flex items-center gap-3">
-                                <Skeleton className="w-10 h-10 rounded-xl" />
-                                <div className="text-center xl:text-left">
-                                    <Skeleton className="h-5 w-24 mb-1" />
-                                    <Skeleton className="h-3 w-32" />
-                                </div>
-                            </div>
-
-                            {/* Service Tabs Skeleton */}
-                            <div className="flex bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 w-full sm:w-auto">
-                                {[1, 2, 3].map((i) => (
-                                    <div key={i} className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 sm:px-5 py-2">
-                                        <Skeleton className="w-4 h-4 rounded" />
-                                        <Skeleton className="h-3 w-16 hidden sm:block" />
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Form Section Skeleton */}
-                        <div className="p-8">
-                            <div className="space-y-8">
-                                <div className="grid gap-x-10 gap-y-8 grid-cols-1 md:grid-cols-3">
-                                    {/* Bank Select Skeleton */}
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-3 w-20" />
-                                        <Skeleton className="h-11 w-full rounded-xl" />
-                                    </div>
-
-                                    {/* Mobile Input Skeleton */}
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-3 w-28" />
-                                        <Skeleton className="h-11 w-full rounded-xl" />
-                                    </div>
-
-                                    {/* Aadhaar Input Skeleton */}
-                                    <div className="space-y-2">
-                                        <Skeleton className="h-3 w-32" />
-                                        <Skeleton className="h-11 w-full rounded-xl" />
-                                    </div>
-                                </div>
-
-                                {/* Bottom Section Skeleton */}
-                                <div className="pt-6 border-t border-slate-50 flex flex-col lg:flex-row items-center justify-between gap-6">
-                                    <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50/50 rounded-xl border border-amber-100/50 w-full lg:w-auto">
-                                        <Skeleton className="w-6 h-6 rounded-full" />
-                                        <Skeleton className="h-3 w-64" />
-                                    </div>
-                                    <Skeleton className="h-11 w-full lg:w-40 rounded-xl" />
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-            </PageLayout>
-        );
+        setIsLoading(false);
+        if (res.success) {
+          toast.success(res.message || 'Transaction successful');
+        } else {
+          toast.error(res.message || 'Transaction failed');
+        }
+        dispatch(fetchWallet());
+      },
+      onError: (error) => {
+        if (error.code) {
+          if (error.code === "AEPS_LOGIN_REQUIRED") {
+            navigate("/aeps2/aeps-daily-login", { replace: true });
+            toast.error(error.message || "Login required for AEPS services. Please login to continue.");
+            return;
+          }
+        }
+        setIsLoading(false);
+        toast.error(handleValidationError(error) || "Transaction failed");
+      }
     }
-    if (rejectRequest("aeps2", profile?.requestedService)) return (<RejectedRequest service="aeps" pipeline="aeps2" />)
-    if (!checkAssignedService("aeps", "aeps2", profile?.assignedServices)) return (<NoPermission service="aeps" pipeline="aeps2" />)
+  );
+
+  const handleServiceSubmit = async (e) => {
+    e.preventDefault();
+    let tempsErrors = {};
+
+    if (location.lat === null || location.lng === null) {
+      return toast.error("Location access is required for AePS transactions. Please enable location and try again.");
+    }
+
+    if (!serviceFormData.bank) {
+      tempsErrors.bank = "Please select a bank";
+    }
+    if (!phoneRegex.test(serviceFormData.mobile)) {
+      tempsErrors.mobile = "Please enter a valid mobile number";
+    }
+    if (!aadharRegex.test(serviceFormData.aadhaar)) {
+      tempsErrors.aadhaar = "Please enter a valid 12-digit Aadhaar number";
+    }
+    if (activeService === 'withdraw' && !serviceFormData.amount) {
+      tempsErrors.amount = "Please enter amount";
+    } else if (serviceFormData.amount && (isNaN(serviceFormData.amount) || Number(serviceFormData.amount) < 100 || !(Number(serviceFormData.amount) % 50 === 0))) {
+      tempsErrors.amount = "Please enter a valid amount should be multiple of 50 (Minimum ₹100)";
+    }
+
+    setErrors(tempsErrors);
+
+    if (Object.keys(tempsErrors).length > 0) {
+      return toast.error("Please fill in all required fields correctly");
+    }
+
+
+
+    setIsLoading(true);
+    const device = await discoverDevice();
+
+    if (!device.success) {
+      setIsLoading(false);
+      toast.error(device.message);
+      return;
+    }
+    const capture = await captureFingerprint(false);
+
+    if (capture.success) {
+
+      const clientIp = await fetchPublicIp();
+      if (!clientIp) {
+        toast.error("Unable to fetch client IP address. Please check your internet connection and try again.");
+        setIsLoading(false);
+        return;
+      }
+      doAepsService({
+        serviceType: activeService,
+        bankId: serviceFormData.bank,
+        mobile: serviceFormData.mobile,
+        aadhaar: serviceFormData.aadhaar,
+        amount: activeService === 'withdraw' ? serviceFormData.amount : 0,
+        latitude: location.lat,
+        longitude: location.lng,
+        pidData: capture.data,
+        sourceIp: clientIp
+
+      });
+
+    } else {
+      setIsLoading(false);
+      toast.error(capture.message);
+    }
+  };
+
+  if (profileLoading || (!profile && !profileError)) {
     return (
-        <PageLayout
-            title="AePS Services Dashboard"
-            subtitle="Complete Transactions with Unified Aadhaar Gateway"
-            className="max-w-[1600px] mx-auto py-6"
-        >
-            <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
-            >
-                <Card className="p-0 overflow-hidden border-slate-100 shadow-sm bg-white">
-                    <div className="px-8 py-6 border-b border-slate-50 flex flex-col items-center lg:flex-row xl:items-center justify-between gap-6">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
-                                <CreditCard size={20} />
-                            </div>
-                            <div className="text-center xl:text-left">
-                                <h2 className="text-lg font-bold text-slate-800 tracking-tight">
-                                    AEPS Terminal
-                                </h2>
-                                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                                    Secure Transaction Engine
-                                </p>
-                            </div>
-                        </div>
+      <PageLayout
+        title="Aadhaar Enabled Payment System (AePS)"
+        subtitle="Complete Transactions with Unified Aadhaar Gateway"
+        className="max-w-[1600px] mx-auto py-6"
+      >
+        <div className="space-y-6">
+          <Card className="p-0 overflow-hidden border-slate-100 shadow-sm bg-white">
+            {/* Header Section Skeleton */}
+            <div className="px-8 py-6 border-b border-slate-50 flex flex-col items-center lg:flex-row xl:items-center justify-between gap-6">
+              <div className="flex items-center gap-3">
+                <Skeleton className="w-10 h-10 rounded-xl" />
+                <div className="text-center xl:text-left">
+                  <Skeleton className="h-5 w-24 mb-1" />
+                  <Skeleton className="h-3 w-32" />
+                </div>
+              </div>
 
-                        <div className="flex bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 relative w-full sm:w-auto">
-                            {[
-                                { id: 'inquiry', label: 'Balance Inquiry', short: 'Balance', icon: CreditCard },
-                                { id: 'statement', label: 'Mini Statement', short: 'Statement', icon: History },
-                                { id: 'withdraw', label: 'Cash Withdrawal', short: 'Withdraw', icon: Banknote },
-                            ].map((tab) => (
-                                <button
-                                    key={tab.id}
-                                    type="button"
-                                    onClick={() => {
-                                        setActiveService(tab.id); setServiceFormData({
-                                            bank: '',
-                                            mobile: '',
-                                            aadhaar: '',
-                                            amount: ''
-                                        })
-                                    }}
-                                    className={cn(
-                                        "relative flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 sm:px-5 py-2 rounded-xl text-[9px] sm:text-xs font-bold transition-colors duration-200 z-10 whitespace-nowrap",
-                                        activeService === tab.id ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
-                                    )}
-                                >
-                                    {activeService === tab.id && (
-                                        <motion.div
-                                            layoutId="activeTabPill"
-                                            className="absolute inset-0 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-200/80 rounded-xl"
-                                            transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
-                                        />
-                                    )}
-                                    <tab.icon
-                                        className={cn(
-                                            "relative z-10 transition-colors duration-300 w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0",
-                                            activeService === tab.id ? "text-indigo-600" : "text-slate-400"
-                                        )}
-                                    />
-                                    <span className="relative z-10 hidden md:inline">{tab.label}</span>
-                                    <span className="relative z-10 hidden sm:inline md:hidden">{tab.short}</span>
-                                    <span className="relative z-10 inline sm:hidden">{tab.short}</span>
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+              {/* Service Tabs Skeleton */}
+              <div className="flex bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 w-full sm:w-auto">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 sm:px-5 py-2">
+                    <Skeleton className="w-4 h-4 rounded" />
+                    <Skeleton className="h-3 w-16 hidden sm:block" />
+                  </div>
+                ))}
+              </div>
+            </div>
 
-                    <div className="p-8">
-                        <form onSubmit={handleServiceSubmit} className="space-y-8">
-                            <div className={cn(
-                                "grid gap-x-10 gap-y-8",
-                                activeService === 'withdraw' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"
-                            )}>
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Select Bank</label>
-                                    <Select
-                                        placeholder="--Choose Bank--"
-                                        searchable={true}
-                                        options={bankList}
-                                        value={serviceFormData.bank}
-                                        onChange={(val) => {
-                                            setServiceFormData({ ...serviceFormData, bank: val })
-                                            setErrors({ ...errors, bank: "" })
-                                        }}
-                                        className="h-11! rounded-xl!"
-                                        error={errors.bank}
-                                    />
-                                </div>
+            {/* Form Section Skeleton */}
+            <div className="p-8">
+              <div className="space-y-8">
+                <div className="grid gap-x-10 gap-y-8 grid-cols-1 md:grid-cols-3">
+                  {/* Bank Select Skeleton */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-20" />
+                    <Skeleton className="h-11 w-full rounded-xl" />
+                  </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Customer Mobile</label>
-                                    <Input
-                                        icon={Smartphone}
-                                        value={serviceFormData.mobile}
-                                        onChange={(e) => {
-                                            setServiceFormData({ ...serviceFormData, mobile: formatNumberInput(e.target.value, 10) })
-                                            setErrors({ ...errors, mobile: "" })
-                                        }}
-                                        placeholder="Enter 10 digit number"
-                                        maxLength={10}
-                                        className="h-11 rounded-xl border-slate-200"
-                                        error={errors.mobile}
-                                    />
-                                </div>
+                  {/* Mobile Input Skeleton */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-28" />
+                    <Skeleton className="h-11 w-full rounded-xl" />
+                  </div>
 
-                                <div className="space-y-2">
-                                    <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Customer Aadhaar</label>
-                                    <Input
-                                        icon={Fingerprint}
-                                        value={serviceFormData.aadhaar}
-                                        onChange={(e) => {
-                                            setServiceFormData({ ...serviceFormData, aadhaar: formatAadharInput(e.target.value) })
-                                            setErrors({ ...errors, aadhaar: "" })
-                                        }}
-                                        placeholder="000000000000"
-                                        maxLength={12}
-                                        error={errors.aadhaar}
-                                        className="h-11 rounded-xl border-slate-200 text-lg tracking-widest font-bold"
-                                    />
-                                </div>
+                  {/* Aadhaar Input Skeleton */}
+                  <div className="space-y-2">
+                    <Skeleton className="h-3 w-32" />
+                    <Skeleton className="h-11 w-full rounded-xl" />
+                  </div>
+                </div>
 
-                                {activeService === 'withdraw' && (
-                                    <div className="space-y-2">
-                                        <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Withdrawal Amount</label>
-                                        <Input
-                                            icon={Banknote}
-                                            value={serviceFormData.amount}
-                                            onChange={(e) => {
-                                                setServiceFormData({ ...serviceFormData, amount: formatNumberInput(e.target.value, 8) })
-                                                setErrors({ ...errors, amount: "" })
-                                            }}
-                                            placeholder="Enter amount (Minimum ₹100)"
-                                            className="h-11 rounded-xl border-slate-200 font-bold"
-                                            error={errors.amount}
-                                        />
-                                    </div>
-                                )}
-                            </div>
+                {/* Bottom Section Skeleton */}
+                <div className="pt-6 border-t border-slate-50 flex flex-col lg:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50/50 rounded-xl border border-amber-100/50 w-full lg:w-auto">
+                    <Skeleton className="w-6 h-6 rounded-full" />
+                    <Skeleton className="h-3 w-64" />
+                  </div>
+                  <Skeleton className="h-11 w-full lg:w-40 rounded-xl" />
+                </div>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </PageLayout>
+    );
+  }
+  if (rejectRequest("aeps2", profile?.requestedService)) return (<RejectedRequest service="aeps" pipeline="aeps2" />)
+  if (!checkAssignedService("aeps", "aeps2", profile?.assignedServices)) return (<NoPermission service="aeps" pipeline="aeps2" />)
+  return (
+    <PageLayout
+      title="Aadhaar Enabled Payment System (AePS)"
+      subtitle="Complete Transactions with Unified Aadhaar Gateway"
+      className="max-w-[1600px] mx-auto py-6"
+    >
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="space-y-6"
+      >
+        <Card className="p-0 overflow-hidden border-slate-100 shadow-sm bg-white">
+          <div className="px-8 py-6 border-b border-slate-50 flex flex-col items-center lg:flex-row xl:items-center justify-between gap-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                <CreditCard size={20} />
+              </div>
+              <div className="text-center xl:text-left">
+                <h2 className="text-lg font-bold text-slate-800 tracking-tight">
+                  AEPS Terminal
+                </h2>
+                <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                  Secure Transaction Engine
+                </p>
+              </div>
+            </div>
 
-                            <div className="pt-6 border-t border-slate-50 flex flex-col lg:flex-row items-center justify-between gap-6">
-                                <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50/50 rounded-xl border border-amber-100/50 w-full lg:w-auto">
-                                    <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
-                                        <Info size={14} className="text-amber-600" />
-                                    </div>
-                                    <p className="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase tracking-tight leading-tight">
-                                        Ensure the customer's finger is properly placed on the biometric scanner
-                                    </p>
-                                </div>
-                                <Button
-                                    type="submit"
-                                    isLoading={isLoading}
-                                    className="h-11 w-full lg:w-auto lg:px-10 rounded-xl bg-[#7065e0] hover:bg-[#5f54cc] text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-2.5 transition-all active:scale-[0.98]"
-                                >
-                                    <Fingerprint size={18} />
-                                    Process Transaction
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
-                </Card>
-
-                {recieptModalData.isOpen && (
-
-                    <ReceiptModal
-                        title={recieptModalData.title}
-                        date={recieptModalData.date}
-                        subTitleLabel={recieptModalData.subTitleLabel}
-                        subTitleValue={recieptModalData.subTitleValue}
-                        receiptData={recieptModalData.receiptData}
-                        onClose={() => {
-                            setRecieptModalData({ title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false });
-                            setServiceFormData({ bank: '', mobile: '', aadhaar: '', amount: '' });
-                            setErrors({ bank: '', mobile: '', aadhaar: '', amount: '' });
-                        }}
+            <div className="flex bg-slate-100/50 p-1 rounded-2xl border border-slate-200/50 relative w-full sm:w-auto">
+              {[
+                { id: 'inquiry', label: 'Balance Inquiry', short: 'Balance', icon: CreditCard },
+                { id: 'statement', label: 'Mini Statement', short: 'Statement', icon: History },
+                { id: 'withdraw', label: 'Cash Withdrawal', short: 'Withdraw', icon: Banknote },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveService(tab.id); setServiceFormData({
+                      bank: '',
+                      mobile: '',
+                      aadhaar: '',
+                      amount: ''
+                    })
+                  }}
+                  className={cn(
+                    "relative flex flex-1 sm:flex-none items-center justify-center gap-1.5 px-3 sm:px-5 py-2 rounded-xl text-[9px] sm:text-xs font-bold transition-colors duration-200 z-10 whitespace-nowrap",
+                    activeService === tab.id ? "text-slate-900" : "text-slate-400 hover:text-slate-600"
+                  )}
+                >
+                  {activeService === tab.id && (
+                    <motion.div
+                      layoutId="activeTabPill"
+                      className="absolute inset-0 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-slate-200/80 rounded-xl"
+                      transition={{ type: "spring", bounce: 0.15, duration: 0.5 }}
                     />
+                  )}
+                  <tab.icon
+                    className={cn(
+                      "relative z-10 transition-colors duration-300 w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0",
+                      activeService === tab.id ? "text-indigo-600" : "text-slate-400"
+                    )}
+                  />
+                  <span className="relative z-10 hidden md:inline">{tab.label}</span>
+                  <span className="relative z-10 hidden sm:inline md:hidden">{tab.short}</span>
+                  <span className="relative z-10 inline sm:hidden">{tab.short}</span>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-8">
+            <form onSubmit={handleServiceSubmit} className="space-y-8">
+              <div className={cn(
+                "grid gap-x-10 gap-y-8",
+                activeService === 'withdraw' ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 md:grid-cols-3"
+              )}>
+                <div className="space-y-2">
+                  <Input
+                    label="Select Bank"
+                    placeholder="--Choose Bank--"
+                    searchable={true}
+                    options={bankList}
+                    value={serviceFormData.bank}
+                    onChange={(val) => {
+                      setServiceFormData({ ...serviceFormData, bank: val })
+                      setErrors({ ...errors, bank: "" })
+                    }}
+                    className="h-11! rounded-xl!"
+                    error={errors.bank}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Input
+                    label="Customer Mobile"
+                    icon={Smartphone}
+                    value={serviceFormData.mobile}
+                    onChange={(e) => {
+                      setServiceFormData({ ...serviceFormData, mobile: formatNumberInput(e.target.value, 10) })
+                      setErrors({ ...errors, mobile: "" })
+                    }}
+                    placeholder="Enter 10 digit number"
+                    maxLength={10}
+
+                    error={errors.mobile}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Input
+                    label="Customer Aadhaar"
+                    icon={Fingerprint}
+                    value={serviceFormData.aadhaar}
+                    onChange={(e) => {
+                      setServiceFormData({ ...serviceFormData, aadhaar: formatAadharInput(e.target.value) })
+                      setErrors({ ...errors, aadhaar: "" })
+                    }}
+                    placeholder="000000000000"
+                    maxLength={12}
+                    error={errors.aadhaar}
+                  />
+                </div>
+
+                {activeService === 'withdraw' && (
+                  <div className="space-y-2">
+                    <Input
+                      label="Withdrawal Amount"
+                      icon={Banknote}
+                      value={serviceFormData.amount}
+                      onChange={(e) => {
+                        setServiceFormData({ ...serviceFormData, amount: formatNumberInput(e.target.value, 8) })
+                        setErrors({ ...errors, amount: "" })
+                      }}
+                      placeholder="Enter amount (Minimum ₹100)"
+                      error={errors.amount}
+                    />
+                  </div>
                 )}
-                {/* {responseModal.isOpen && (
+              </div>
+
+              <div className="pt-6 border-t border-slate-50 flex flex-col lg:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-3 px-4 py-2.5 bg-amber-50/50 rounded-xl border border-amber-100/50 w-full lg:w-auto">
+                  <div className="w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <Info size={14} className="text-amber-600" />
+                  </div>
+                  <p className="text-[9px] sm:text-[10px] font-bold text-amber-700 uppercase tracking-tight leading-tight">
+                    Ensure the customer's finger is properly placed on the biometric scanner
+                  </p>
+                </div>
+                <Button
+                  type="submit"
+                  isLoading={isLoading}
+                  className="h-11 w-full lg:w-auto lg:px-10 rounded-xl bg-[#7065e0] hover:bg-[#5f54cc] text-white font-black text-[11px] uppercase tracking-widest shadow-lg shadow-indigo-600/10 flex items-center justify-center gap-2.5 transition-all active:scale-[0.98]"
+                >
+                  <Fingerprint size={18} />
+                  Process Transaction
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Card>
+
+        {recieptModalData.isOpen && (
+
+          <ReceiptModal
+            title={recieptModalData.title}
+            date={recieptModalData.date}
+            subTitleLabel={recieptModalData.subTitleLabel}
+            subTitleValue={recieptModalData.subTitleValue}
+            receiptData={recieptModalData.receiptData}
+            onClose={() => {
+              setRecieptModalData({ title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false });
+              setServiceFormData({ bank: '', mobile: '', aadhaar: '', amount: '' });
+              setErrors({ bank: '', mobile: '', aadhaar: '', amount: '' });
+            }}
+          />
+        )}
+        {/* {responseModal.isOpen && (
                     <Aeps2ResponseModal
                         responseData={responseModal.data}
                         transactionType={activeService}
                         onClose={() => setResponseModal({ isOpen: false, data: null, type: null })}
                     />
                 )} */}
-            </motion.div>
-        </PageLayout>
-    );
+      </motion.div>
+    </PageLayout>
+  );
 }

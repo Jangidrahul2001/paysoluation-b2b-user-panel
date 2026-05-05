@@ -80,11 +80,11 @@ export default function BillPayment() {
     setBill(null);
     setBillValidateData({});
     setFormData({ billerId: null, inputParams: [] });
-  setBillerFields([]);
-  setBillerInfo({});
-  setCustomerMobile("");
-  setCustomerName("");
-  setIsButtonDisable(true);    
+    setBillerFields([]);
+    setBillerInfo({});
+    setCustomerMobile("");
+    setCustomerName("");
+    setIsButtonDisable(true);
     setVisibleCount(12);
   };
 
@@ -151,10 +151,10 @@ export default function BillPayment() {
 
   const { post: fetchBill, isLoading: isFetchingBill } = usePost(apiEndpoints.fetchBbpsBill, {
     onSuccess: (data) => {
-      console.log(data,"fetch bill api called")
+      console.log(data, "fetch bill api called")
       if (data?.success) {
         setBill(data.data);
-        
+
         setCustomerName(data?.data?.data?.billerResponse?.customerName || "")
         setIsLoadingInitial(false);
       }
@@ -234,8 +234,8 @@ export default function BillPayment() {
       paramValue: value
     }));
   };
-  console.log("refIdddd",bill?.refid)
-  console.log("customer nameeeee",customerName)
+  console.log("refIdddd", bill?.refid)
+  console.log("customer nameeeee", customerName)
 
   const handleBillPay = (e) => {
     if (e) e.preventDefault();
@@ -244,20 +244,20 @@ export default function BillPayment() {
       return;
     }
     if (!bill?.amount || Number(bill.amount) <= 0) {
-    toast.error("Valid bill amount is required");
-    return;
-  }
-   const billAmount = Number(bill?.amount ?? 0) * 100;
+      toast.error("Valid bill amount is required");
+      return;
+    }
+    const billAmount = Number(bill?.amount ?? 0) * 100;
     payBill({
       ...bill,
-      billAmount:  billAmount,
+      billAmount: billAmount,
       customerName: customerName,
       billerId: selectedBiller?.billerId,
       customerMobile: customerMobile,
       refid: formData?.billValidate?.refid || bill?.refid,
       placeholderValue: formData?.paramName || formData?.inputParams[0]?.paramName,
       paramValue: formData?.paramValue || formData?.inputParams[0]?.paramValue,
-      amount:  billAmount,
+      amount: billAmount,
     });
   };
 
@@ -297,7 +297,7 @@ export default function BillPayment() {
   return (
     <PageLayout
       title={
-        !selectedService ? "Bill Payment" : (
+        !selectedService ? "Bharat Bill Payment System (BBPS)" : (
           <div className="flex flex-col md:flex-row items-center gap-3">
             <span>{selectedService.name}</span>
             <span className="text-[9px] font-black tracking-widest px-3 py-1 bg-indigo-50 text-indigo-500 rounded-full border border-indigo-100 shadow-sm mt-1 md:mt-0 uppercase">CONFIGURE DETAIL</span>
@@ -449,16 +449,14 @@ export default function BillPayment() {
                               {isBillValidated ? (
                                 <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-emerald-50/20 p-8 rounded-[2rem] border-2 border-dashed border-emerald-100 space-y-3">
 
+                                  <Input
+                                    icon={IndianRupee}
+                                    label="Payment Amount (INR)"
+                                    value={bill?.amount || ""}
+                                    onChange={(e) => setBill({ ...bill, amount: formatDecimalNumberInput(e.target.value, 7) })}
+                                    placeholder="0.00"
+                                  />
 
-                                  
-                                    <Input
-                                      icon={IndianRupee}
-                                      label="Payment Amount (INR)"
-                                      value={bill?.amount||""}
-                                      onChange={(e) => setBill({ ...bill, amount: formatDecimalNumberInput(e.target.value, 7)})}
-                                      placeholder="0.00"
-                                    />
-                                
 
                                   <div className="relative group">
                                     <Input
@@ -482,7 +480,7 @@ export default function BillPayment() {
                                     />
                                   </div>
                                   <Button
-                                   disabled={!bill?.amount || Number(bill.amount) <= 0 || !customerMobile || customerMobile.length < 10 || !customerName?.trim() || isPayingBill}
+                                    disabled={!bill?.amount || Number(bill.amount) <= 0 || !customerMobile || customerMobile.length < 10 || !customerName?.trim() || isPayingBill}
                                     onClick={handleBillPay}
                                     className="w-full h-12.5 rounded-xl bg-emerald-600 hover:bg-indigo-600 border-none text-white font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-98 transition-all"
                                   >

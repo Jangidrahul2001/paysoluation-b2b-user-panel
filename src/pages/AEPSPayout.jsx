@@ -536,7 +536,7 @@ export default function AEPSPayout() {
 
                 <div className="flex items-center justify-between mb-8">
                   <div className="space-y-1">
-                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">Quick Transfer</h3>
+                    <h3 className="text-xl font-bold text-slate-900 tracking-tight">AePS Payout</h3>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none">Instant Settlement Engine</p>
                   </div>
                   <div className="p-3 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 shadow-sm">
