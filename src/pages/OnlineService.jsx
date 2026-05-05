@@ -128,7 +128,7 @@ export default function OnlineService() {
     
       return (
         <PageLayout
-          title="Instant Online Hub"
+          title="Instant Online "
           subtitle="Direct access to premium financial and registration protocols"
           className="py-4"
         >
@@ -149,7 +149,7 @@ export default function OnlineService() {
 
   return (
     <PageLayout
-      title="Instant Online Hub"
+      title="Instant Online "
       subtitle="Direct access to premium financial and registration protocols"
       className="py-4"
     >

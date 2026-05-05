@@ -359,7 +359,7 @@ export default function OnboardingCharges() {
               <div className="w-10 h-10 rounded-xl bg-slate-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
                 <ShieldCheck size={20} className="text-white" />
               </div>
-              <h1 className="text-xl font-black text-white tracking-tight uppercase leading-none">Activation Hub</h1>
+              <h1 className="text-xl font-black text-white tracking-tight uppercase leading-none">Activation </h1>
             </div>
 
             <div className="space-y-2 mb-8">

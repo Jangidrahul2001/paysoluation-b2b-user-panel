@@ -746,7 +746,7 @@ export default function AEPS() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tightest uppercase mb-1">
-                  Onboarding Hub
+                  Onboarding 
                 </h2>
                 <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] leading-tight">
                   HARDWARE SYNCHRONIZATION PENDING

@@ -310,7 +310,7 @@ export default function OfflineService() {
   if (profileLoading) {
     return (
       <PageLayout
-        title="Offline Service Hub"
+        title="Offline Service "
         subtitle="Direct submission gateway for complex administrative protocols"
         className="pb-10"
       >
@@ -352,7 +352,7 @@ export default function OfflineService() {
 
   return (
     <PageLayout
-      title="Offline Service Hub"
+      title="Offline Service "
       subtitle="Direct submission gateway for complex administrative protocols"
       className="pb-10"
     >
