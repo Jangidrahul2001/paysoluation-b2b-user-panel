@@ -35,7 +35,7 @@ export const AuthLayout = ({ children, title, subtitle, imagePosition = 'left' }
             playsInline
             className="w-full h-full object-cover absolute inset-0 transition-opacity duration-1000"
           >
-            <source src="https://res.cloudinary.com/dxcff7wfm/video/upload/v1775655326/Untitled_video_3_uezlsa.mp4" type="video/mp4" />
+            <source src="https://res.cloudinary.com/dhz60qrwq/video/upload/v1777980603/b2b-userpanel_a8kvmk.mp4" type="video/mp4" />
           </video>
 
           <div className="absolute inset-0 bg-black/25 backdrop-blur-[1px]"></div>

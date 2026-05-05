@@ -463,7 +463,7 @@ export default function XpressTransfer() {
 
   return (
     <PageLayout
-      title="Xpress Transfer Hub"
+      title="Xpress Transfer "
       subtitle="Execute instant money transfers to any bank account with real-time processing"
       actions={
         <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
