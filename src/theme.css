@@ -1,0 +1,472 @@
+/* ════════════════════════════════════════════════════════════════════════════
+   🎨 MASTER THEME CONFIGURATION — Single Source of Truth
+   ──────────────────────────────────────────────────────────────────────────
+   Change colors HERE to update the ENTIRE application.
+   Every component reads from these variables.
+   ════════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ══════════════════════════════════════════════════════════════════════════
+     1. PRIMARY BRAND COLORS
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-primary: #6366f1;              /* Main brand / Indigo-500 */
+  --t-primary-hover: #4f46e5;        /* Darker on hover / Indigo-600 */
+  --t-primary-dark: #4338ca;         /* Even darker / Indigo-700 */
+  --t-primary-light: #818cf8;        /* Lighter shade / Indigo-400 */
+  --t-primary-subtle: rgba(99, 102, 241, 0.08);  /* Very subtle bg tint */
+  --t-primary-muted: rgba(99, 102, 241, 0.15);   /* Muted bg tint */
+  --t-primary-ring: rgba(99, 102, 241, 0.2);     /* Focus ring color */
+  --t-primary-shadow: rgba(99, 102, 241, 0.3);   /* Box shadow color */
+  --t-primary-text: #ffffff;         /* Text on primary bg */
+
+  /* Gradient */
+  --t-gradient-start: #6366f1;
+  --t-gradient-end: #8b5cf6;
+  --t-gradient-primary: linear-gradient(135deg, var(--t-gradient-start) 0%, var(--t-gradient-end) 100%);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     2. NEUTRAL / SLATE PALETTE (Base grays used everywhere)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-slate-50:  #f8fafc;
+  --t-slate-100: #f1f5f9;
+  --t-slate-200: #e2e8f0;
+  --t-slate-300: #cbd5e1;
+  --t-slate-400: #94a3b8;
+  --t-slate-500: #64748b;
+  --t-slate-600: #475569;
+  --t-slate-700: #334155;
+  --t-slate-800: #1e293b;
+  --t-slate-900: #0f172a;
+  --t-slate-950: #020617;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     3. LAYOUT — Main App Shell
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-app-bg: var(--t-slate-50);
+  --t-app-gradient: linear-gradient(180deg, var(--t-slate-50) 0%, #ffffff 100%);
+
+  /* Content Area (inside main panel) */
+  --t-content-bg: #ffffff;
+  --t-content-bg-gradient-from: #ffffff;
+  --t-content-bg-gradient-to: rgba(99, 102, 241, 0.03);
+  --t-content-text: var(--t-slate-900);
+  --t-content-text-secondary: var(--t-slate-500);
+  --t-content-text-muted: var(--t-slate-400);
+
+  /* Main Panel (the bordered container) */
+  --t-panel-bg-from: #ffffff;
+  --t-panel-bg-to: rgba(99, 102, 241, 0.03);
+  --t-panel-border: rgba(99, 102, 241, 0.15);
+  --t-panel-radius: 2rem;
+  --t-panel-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     4. SIDEBAR THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-sidebar-bg: #ffffff;
+  --t-sidebar-border: rgba(99, 102, 241, 0.15);
+  --t-sidebar-radius: 2.5rem;
+  --t-sidebar-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+
+  /* Sidebar Brand / Logo */
+  --t-sidebar-brand-bg: var(--t-primary);
+  --t-sidebar-brand-text: #ffffff;
+  --t-sidebar-title-text: var(--t-slate-900);
+  --t-sidebar-subtitle-text: var(--t-slate-400);
+
+  /* Sidebar Navigation Items */
+  --t-sidebar-item-text: var(--t-slate-500);
+  --t-sidebar-item-text-hover: var(--t-slate-800);
+  --t-sidebar-item-icon: var(--t-slate-400);
+  --t-sidebar-item-icon-hover: var(--t-slate-600);
+  --t-sidebar-item-hover-bg: rgba(99, 102, 241, 0.06);
+  --t-sidebar-item-radius: 0.75rem;
+
+  /* Active Navigation Item */
+  --t-sidebar-active-bg: rgba(99, 102, 241, 0.06);
+  --t-sidebar-active-text: var(--t-slate-900);
+  --t-sidebar-active-icon: var(--t-primary);
+
+  /* Sub-menu Items */
+  --t-sidebar-sub-text: var(--t-slate-400);
+  --t-sidebar-sub-text-hover: var(--t-slate-800);
+  --t-sidebar-sub-hover-bg: var(--t-slate-50);
+  --t-sidebar-sub-active-text: var(--t-primary);
+  --t-sidebar-sub-active-bg: rgba(99, 102, 241, 0.04);
+  --t-sidebar-sub-active-border: var(--t-primary);
+  --t-sidebar-sub-border: var(--t-slate-100);
+
+  /* Sidebar Group Divider / Label */
+  --t-sidebar-label-text: rgba(148, 163, 184, 0.8);
+  --t-sidebar-divider: var(--t-slate-200);
+
+  /* Sidebar Floating Menu (collapsed mode) */
+  --t-sidebar-float-bg: rgba(255, 255, 255, 0.95);
+  --t-sidebar-float-border: var(--t-slate-100);
+  --t-sidebar-float-shadow: 0 20px 60px -15px rgba(99, 102, 241, 0.15);
+  --t-sidebar-float-active-bg: var(--t-primary);
+  --t-sidebar-float-active-text: #ffffff;
+  --t-sidebar-float-item-text: var(--t-slate-600);
+  --t-sidebar-float-item-hover-bg: var(--t-slate-50);
+
+  /* Sidebar Tooltip (collapsed mode) */
+  --t-sidebar-tooltip-bg: var(--t-primary);
+  --t-sidebar-tooltip-text: #ffffff;
+
+  /* Sidebar Support Card */
+  --t-sidebar-card-bg: var(--t-slate-800);
+  --t-sidebar-card-text: #ffffff;
+  --t-sidebar-card-glow: rgba(99, 102, 241, 0.1);
+  --t-sidebar-card-badge-bg: rgba(16, 185, 129, 0.1);
+  --t-sidebar-card-badge-border: rgba(16, 185, 129, 0.2);
+  --t-sidebar-card-badge-text: #10b981;
+  --t-sidebar-card-btn-bg: var(--t-primary);
+  --t-sidebar-card-btn-hover: var(--t-primary-hover);
+  --t-sidebar-card-btn-shadow: rgba(99, 102, 241, 0.2);
+
+  /* Mobile Overlay */
+  --t-overlay-bg: rgba(2, 6, 23, 0.6);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     5. HEADER THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-header-bg: rgba(99, 102, 241, 0.03);
+  --t-header-border: rgba(99, 102, 241, 0.08);
+  --t-header-text: var(--t-slate-800);
+
+  /* Ticker */
+  --t-ticker-bg: rgba(255, 255, 255, 0.5);
+  --t-ticker-border: rgba(99, 102, 241, 0.1);
+  --t-ticker-dot: var(--t-primary);
+  --t-ticker-label-text: var(--t-primary);
+  --t-ticker-text: var(--t-slate-500);
+
+  /* Wallet Bar */
+  --t-wallet-bar-bg: rgba(241, 245, 249, 0.5);
+  --t-wallet-bar-border: rgba(226, 232, 240, 0.5);
+  --t-wallet-item-bg: rgba(255, 255, 255, 0.5);
+  --t-wallet-item-hover-bg: #ffffff;
+
+  /* AEPS Wallet Accent */
+  --t-wallet-aeps-accent: #f59e0b;
+  --t-wallet-aeps-accent-bg: rgba(245, 158, 11, 0.1);
+  --t-wallet-aeps-label: #d97706;
+
+  /* Main Wallet Accent */
+  --t-wallet-main-accent: var(--t-primary);
+  --t-wallet-main-accent-bg: rgba(99, 102, 241, 0.1);
+  --t-wallet-main-label: var(--t-primary);
+
+  --t-wallet-amount-text: var(--t-slate-900);
+
+  /* Header Action Buttons */
+  --t-header-btn-bg: rgba(255, 255, 255, 0.8);
+  --t-header-btn-hover-bg: #ffffff;
+  --t-header-btn-border: rgba(241, 245, 249, 0.5);
+  --t-header-btn-text: var(--t-slate-500);
+  --t-header-btn-hover-text: var(--t-slate-900);
+
+  /* Profile Avatar */
+  --t-avatar-border: rgba(226, 232, 240, 0.6);
+
+  /* Dropdowns (Profile, Notification) */
+  --t-dropdown-bg: #ffffff;
+  --t-dropdown-border: rgba(226, 232, 240, 0.6);
+  --t-dropdown-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.15);
+  --t-dropdown-divider: rgba(241, 245, 249, 0.6);
+  --t-dropdown-item-text: var(--t-slate-600);
+  --t-dropdown-item-hover-bg: rgba(241, 245, 249, 0.6);
+  --t-dropdown-item-icon: var(--t-slate-400);
+  --t-dropdown-danger-text: #f43f5e;
+  --t-dropdown-danger-hover-bg: rgba(244, 63, 94, 0.05);
+  --t-dropdown-danger-hover-text: #e11d48;
+
+  /* Notification Badge */
+  --t-notif-badge-bg: var(--t-primary);
+  --t-notif-unread-dot: var(--t-primary);
+  --t-notif-unread-glow: rgba(99, 102, 241, 0.5);
+  --t-notif-count-bg: rgba(99, 102, 241, 0.06);
+  --t-notif-count-text: var(--t-primary);
+  --t-notif-count-border: rgba(99, 102, 241, 0.1);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     6. BUTTON THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  /* Primary */
+  --t-btn-primary-bg: var(--t-primary);
+  --t-btn-primary-hover: var(--t-primary-hover);
+  --t-btn-primary-text: #ffffff;
+  --t-btn-primary-shadow: rgba(99, 102, 241, 0.3);
+
+  /* Secondary */
+  --t-btn-secondary-bg: var(--t-slate-100);
+  --t-btn-secondary-hover: var(--t-slate-200);
+  --t-btn-secondary-text: var(--t-slate-600);
+
+  /* Ghost / Outline */
+  --t-btn-ghost-bg: transparent;
+  --t-btn-ghost-hover: var(--t-slate-100);
+  --t-btn-ghost-text: var(--t-slate-500);
+  --t-btn-ghost-border: var(--t-slate-200);
+
+  /* Danger */
+  --t-btn-danger-bg: #ef4444;
+  --t-btn-danger-hover: #dc2626;
+  --t-btn-danger-text: #ffffff;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     7. INPUT / FORM CONTROLS THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-input-bg: #ffffff;
+  --t-input-border: var(--t-slate-200);
+  --t-input-border-hover: var(--t-slate-300);
+  --t-input-border-focus: rgba(99, 102, 241, 0.5);
+  --t-input-ring-focus: rgba(99, 102, 241, 0.08);
+  --t-input-text: var(--t-slate-800);
+  --t-input-placeholder: var(--t-slate-300);
+  --t-input-label: var(--t-slate-700);
+  --t-input-icon: var(--t-slate-400);
+  --t-input-icon-focus: var(--t-primary);
+  --t-input-error-border: #ef4444;
+  --t-input-error-ring: rgba(239, 68, 68, 0.05);
+  --t-input-error-text: #ef4444;
+  --t-input-radius: 1rem;
+  --t-input-radius-lg: 1.25rem;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     8. SELECT / DROPDOWN CONTROLS
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-select-bg: #ffffff;
+  --t-select-border: var(--t-slate-200);
+  --t-select-border-focus: var(--t-primary);
+  --t-select-ring-focus: var(--t-slate-100);
+  --t-select-text: var(--t-slate-700);
+  --t-select-placeholder: var(--t-slate-300);
+  --t-select-icon: var(--t-slate-400);
+  --t-select-dropdown-bg: #ffffff;
+  --t-select-dropdown-border: var(--t-slate-100);
+  --t-select-dropdown-shadow: 0 25px 50px -12px rgba(226, 232, 240, 0.5);
+  --t-select-option-text: var(--t-slate-600);
+  --t-select-option-hover-bg: var(--t-slate-50);
+  --t-select-option-hover-text: var(--t-primary);
+  --t-select-option-active-bg: var(--t-slate-50);
+  --t-select-option-active-text: var(--t-primary);
+  --t-select-option-focused-bg: var(--t-slate-50);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     9. TABLE THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  /* Table Card */
+  --t-table-bg-from: #ffffff;
+  --t-table-bg-to: rgba(99, 102, 241, 0.03);
+  --t-table-border: rgba(99, 102, 241, 0.12);
+  --t-table-radius: 2rem;
+
+  /* Table Header Bar (controls / search area) */
+  --t-table-header-bg: rgba(99, 102, 241, 0.03);
+  --t-table-header-border: rgba(99, 102, 241, 0.06);
+
+  /* Table Head Row */
+  --t-table-head-bg: rgba(99, 102, 241, 0.03);
+  --t-table-head-text: var(--t-slate-300);
+  --t-table-head-border: rgba(99, 102, 241, 0.06);
+
+  /* Table Body */
+  --t-table-cell-bg: #ffffff;
+  --t-table-cell-text: var(--t-slate-900);
+  --t-table-cell-border: rgba(99, 102, 241, 0.06);
+  --t-table-row-hover: rgba(241, 245, 249, 0.3);
+  --t-table-row-selected: var(--t-slate-100);
+  --t-table-divider: rgba(99, 102, 241, 0.06);
+  --t-table-empty-text: var(--t-slate-400);
+
+  /* Table Pagination */
+  --t-table-pagination-bg: #ffffff;
+  --t-table-pagination-border: var(--t-slate-100);
+  --t-table-pagination-text: var(--t-slate-400);
+  --t-table-pagination-btn-bg: #ffffff;
+  --t-table-pagination-btn-border: var(--t-slate-200);
+  --t-table-pagination-btn-text: var(--t-slate-400);
+  --t-table-pagination-btn-hover-bg: var(--t-slate-50);
+  --t-table-pagination-btn-hover-text: var(--t-slate-600);
+  --t-table-pagination-active-bg: var(--t-primary);
+  --t-table-pagination-active-text: #ffffff;
+  --t-table-pagination-active-shadow: rgba(99, 102, 241, 0.3);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     10. CARD THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-card-bg: #ffffff;
+  --t-card-border: var(--t-slate-100);
+  --t-card-radius: 2rem;
+  --t-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --t-card-title: var(--t-slate-900);
+  --t-card-subtitle: var(--t-slate-400);
+  --t-card-text: var(--t-slate-600);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     11. MODAL / DIALOG THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-modal-overlay: rgba(30, 41, 59, 0.4);
+  --t-modal-bg: #ffffff;
+  --t-modal-border: var(--t-slate-100);
+  --t-modal-radius: 1rem;
+  --t-modal-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --t-modal-title: var(--t-slate-900);
+  --t-modal-text: var(--t-slate-500);
+  --t-modal-icon-bg: rgba(99, 102, 241, 0.04);
+  --t-modal-icon-text: var(--t-primary);
+  --t-modal-destructive-icon-bg: rgba(239, 68, 68, 0.06);
+  --t-modal-destructive-icon-text: #ef4444;
+  --t-modal-warning-icon-bg: rgba(245, 158, 11, 0.06);
+  --t-modal-warning-icon-text: #f59e0b;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     12. TABS THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-tabs-list-bg: var(--t-slate-100);
+  --t-tabs-trigger-text: var(--t-slate-500);
+  --t-tabs-trigger-active-bg: var(--t-content-bg);
+  --t-tabs-trigger-active-text: var(--t-slate-900);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     13. STATUS BADGE THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-badge-success-bg: #ecfdf5;
+  --t-badge-success-text: #059669;
+  --t-badge-success-border: #a7f3d0;
+
+  --t-badge-pending-bg: #fffbeb;
+  --t-badge-pending-text: #d97706;
+  --t-badge-pending-border: #fde68a;
+
+  --t-badge-failed-bg: #fff1f2;
+  --t-badge-failed-text: #e11d48;
+  --t-badge-failed-border: #fecdd3;
+
+  --t-badge-info-bg: rgba(99, 102, 241, 0.06);
+  --t-badge-info-text: var(--t-primary);
+  --t-badge-info-border: rgba(99, 102, 241, 0.2);
+
+  --t-badge-neutral-bg: var(--t-slate-50);
+  --t-badge-neutral-text: var(--t-slate-500);
+  --t-badge-neutral-border: var(--t-slate-200);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     14. AUTH PAGES THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-auth-page-bg: var(--t-slate-50);
+  --t-auth-card-bg: #ffffff;
+  --t-auth-card-radius: 2.5rem;
+  --t-auth-card-shadow: 0 40px 80px -20px rgba(15, 23, 42, 0.08);
+  --t-auth-visual-overlay: rgba(0, 0, 0, 0.25);
+  --t-auth-social-icon: var(--t-slate-300);
+  --t-auth-social-hover: var(--t-primary);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     15. PAGE LAYOUT THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-page-title: var(--t-slate-950);
+  --t-page-subtitle: var(--t-slate-500);
+  --t-page-back-btn-hover: rgba(99, 102, 241, 0.04);
+  --t-page-back-btn-border: rgba(226, 232, 240, 0.5);
+  --t-page-back-btn-text: var(--t-slate-600);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     16. LOADING SCREEN THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-loader-bg: var(--t-content-bg);
+  --t-loader-ring-outer: rgba(129, 140, 248, 0.2);
+  --t-loader-ring-accent: rgba(99, 102, 241, 0.3);
+  --t-loader-ring-main: var(--t-primary);
+  --t-loader-core: var(--t-primary);
+  --t-loader-glow: var(--t-primary);
+  --t-loader-text: var(--t-content-text);
+  --t-loader-subtext: var(--t-content-text-muted);
+  --t-loader-bar-bg: var(--t-slate-100);
+  --t-loader-bar-fill: var(--t-primary);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     17. ACCENT COLORS
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-accent-pink: #ec4899;
+  --t-accent-purple: #8b5cf6;
+  --t-accent-cyan: #06b6d4;
+  --t-accent-amber: #f59e0b;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     18. STATUS / SEMANTIC COLORS
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-success: #10b981;
+  --t-success-light: #d1fae5;
+  --t-success-dark: #059669;
+
+  --t-error: #ef4444;
+  --t-error-light: #fee2e2;
+  --t-error-dark: #dc2626;
+
+  --t-warning: #f59e0b;
+  --t-warning-light: #fef3c7;
+  --t-warning-dark: #d97706;
+
+  --t-info: #3b82f6;
+  --t-info-light: #dbeafe;
+  --t-info-dark: #2563eb;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     19. BORDERS & DIVIDERS (Global)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-border-color: var(--t-slate-200);
+  --t-border-light: var(--t-slate-100);
+  --t-border-dark: var(--t-slate-300);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     20. SHADOWS (Global)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --t-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --t-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --t-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --t-shadow-primary: 0 10px 25px -5px var(--t-primary-shadow);
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     21. SPACING & RADIUS (Global)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-radius-sm: 0.5rem;
+  --t-radius-md: 0.75rem;
+  --t-radius-lg: 1rem;
+  --t-radius-xl: 1.5rem;
+  --t-radius-2xl: 2rem;
+  --t-radius-3xl: 2.5rem;
+  --t-radius-full: 9999px;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     22. TRANSITIONS (Global)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-transition-fast: 150ms ease-in-out;
+  --t-transition-normal: 200ms ease-in-out;
+  --t-transition-slow: 300ms ease-in-out;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     23. SCROLLBAR THEME
+     ══════════════════════════════════════════════════════════════════════════ */
+  --t-scrollbar-thumb: rgba(100, 116, 139, 0.2);
+  --t-scrollbar-thumb-hover: rgba(100, 116, 139, 0.5);
+  --t-scrollbar-track: transparent;
+
+  /* ══════════════════════════════════════════════════════════════════════════
+     LEGACY COMPAT — Old variable names mapped to new system
+     (So existing code using var(--primary-color) etc. still works)
+     ══════════════════════════════════════════════════════════════════════════ */
+  --primary-color: var(--t-primary);
+  --primary-light: var(--t-primary-light);
+  --primary-dark: var(--t-primary-dark);
+  --content-bg: var(--t-content-bg);
+  --content-bg-secondary: var(--t-slate-100);
+  --content-card-bg: var(--t-card-bg);
+  --content-text: var(--t-content-text);
+  --content-text-secondary: var(--t-content-text-secondary);
+  --content-text-muted: var(--t-content-text-muted);
+  --border-color: var(--t-border-color);
+  --border-light: var(--t-border-light);
+}
