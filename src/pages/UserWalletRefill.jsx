@@ -58,7 +58,7 @@ export default function UserWalletRefill() {
   const [recentRefills, setRecentRefills] = useState([]);
   const [search, setSearch] = useState("");
   const [columnVisibility, setColumnVisibility] = useState({});
-  const [userFilter, setUserFilter] = useState("All");
+  const [userFilter, setUserFilter] = useState("");
   const [totalRecords, setTotalRecords] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
   const [errors, setErrors] = useState({});
@@ -205,7 +205,7 @@ export default function UserWalletRefill() {
 
   const handleReset = () => {
     setDate({ from: null, to: null });
-    setUserFilter("All");
+    setUserFilter("");
     setSearch("");
 
 

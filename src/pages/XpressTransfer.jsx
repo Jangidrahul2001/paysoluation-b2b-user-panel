@@ -33,6 +33,8 @@ import StatusBadge from '../components/ui/StatusBadge';
 import { ActionButtons } from '../components/ui/ActionButton';
 
 export default function XpressTransfer() {
+  
+      const { data: wallet, error: walletError, loading: walletLoading } = useSelector((state) => state.wallet);
   const [formData, setFormData] = useState({
     mobile: '',
     amount: '',
@@ -307,6 +309,10 @@ export default function XpressTransfer() {
     else if (parseFloat(formData?.amount) > 10000) {
       tempErrors.amount = "Amount must be less than 10000";
     }
+     else if (parseFloat(formData?.amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
+                tempErrors.amount ="Amount must be less than wallet balance";
+               
+            }
     if (formData?.purpose.trim() === '') {
       tempErrors.purpose = "Reason is required";
     }
@@ -364,17 +370,13 @@ export default function XpressTransfer() {
   });
 
   const handleTransfer = () => {
-    console.log("Xpress Transfer Initiated", formData);
     if (validate()) {
       setIsTransferingMoney(true);
       xpresspayoutInitiateTransaction(formData)
-
     }
-
   };
 
   const handleAddAccount = () => {
-    console.log("Opening modal, isModalOpen will be:", true);
     setIsModalOpen(true);
   };
   // Replace the single isLoading check with:

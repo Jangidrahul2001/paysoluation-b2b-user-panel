@@ -405,7 +405,6 @@ export default function AEPSPayout() {
   });
 
   const handleTransfer = () => {
-    console.log("Transfer Initiated", formData);
     if (validate()) {
       setIsTransferingMoney(true);
       aepsPayoutInitiateTransaction(formData)
