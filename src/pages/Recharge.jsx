@@ -818,7 +818,7 @@ export default function Recharge() {
                   <Button
                     onClick={handleRecharge}
                     isLoading={isLoading}
-                    disabled={isLoading}
+                    disabled={isLoading || isDetecting || !amount || !selectedCircle || !selectedOperator || !mobileNumber}
                     className="w-full h-11 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[13px] uppercase tracking-[0.2em]  transition-all active:scale-[0.98] flex items-center justify-center gap-3 group"
                   >
                     Proceed to Pay
@@ -1033,10 +1033,7 @@ export default function Recharge() {
         />
       )}
 
-      {/* <ReceiptModal
-        receiptData={receiptData}
-        onClose={() => setReceiptData(null)}
-      /> */}
+
     </PageLayout>
   );
 }

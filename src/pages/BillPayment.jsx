@@ -46,7 +46,8 @@ export default function BillPayment() {
   const [billers, setBillers] = useState([]);
   const [billerFields, setBillerFields] = useState([]);
   const [billerInfo, setBillerInfo] = useState({});
-  const [bill, setBill] = useState(null);
+  const [bill, setBill] = useState({});
+  const [showBillReceipt, setShowBillReceipt] = useState(false);
   const [isBillValidated, setIsBillValidated] = useState(false);
   const [isValidateMandatory, setIsValidateMandatory] = useState(false);
 
@@ -70,6 +71,9 @@ export default function BillPayment() {
 
   const dispatch = useDispatch();
   const { data: profile, error: profileError } = useSelector((state) => state.profile);
+  const [recieptModalData, setRecieptModalData] = useState({
+    title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false
+  });
 
 
   const handleBack = () => {
@@ -78,6 +82,7 @@ export default function BillPayment() {
     setSelectedService(null);
     setSelectedBiller(null);
     setBill(null);
+    setShowBillReceipt(false);
     setBillValidateData({});
     setFormData({ billerId: null, inputParams: [] });
     setBillerFields([]);
@@ -154,7 +159,7 @@ export default function BillPayment() {
       console.log(data, "fetch bill api called")
       if (data?.success) {
         setBill(data.data);
-
+        setShowBillReceipt(true)
         setCustomerName(data?.data?.data?.billerResponse?.customerName || "")
         setIsLoadingInitial(false);
       }
@@ -178,11 +183,37 @@ export default function BillPayment() {
       if (data?.success) {
         console.log(data, "payment response")
         toast.success("Bill Payment Successful!");
-        handleBack();
+        const selectedCategoryName = selectedService?.name;
+        setRecieptModalData({
+          title: "Transaction Successful",
+          // date: res?.data?.timestamp,
+          subTitleLabel: "Amount",
+          subTitleValue: formatToINR(bill?.amount),
+          receiptData: {
+            "Bill No.": data?.data?.billNumber || "",
+            "Customer Mobile": customerMobile || "",
+            "Service": selectedCategoryName || "",
+            "Transaction Id": res?.data?.txnid || "",
+            status: "Transaction Successful"
+          },
+          isOpen: true
+        });
+
         dispatch(fetchWallet());
       }
     },
-    onError: (err) => toast.error(handleValidationError(err) || "Payment processing failed"),
+    onError: (err) => {
+      setSelectedBiller(null)
+      customerMobile("")
+      setBill(null)
+      isBillValidated(false)
+      showBillReceipt(false)
+      setBillValidateData({});
+      setFormData({ billerId: null, inputParams: [] });
+      setBillerFields([]);
+      setBillerInfo({});
+      toast.error(handleValidationError(err) || "Payment processing failed")
+    },
   });
 
   useEffect(() => {
@@ -250,13 +281,14 @@ export default function BillPayment() {
     const billAmount = Number(bill?.amount ?? 0) * 100;
     payBill({
       ...bill,
+        ...(bill?.data?.billerResponse || {}),
       billAmount: billAmount,
       customerName: customerName,
       billerId: selectedBiller?.billerId,
       customerMobile: customerMobile,
       refid: formData?.billValidate?.refid || bill?.refid,
-      placeholderValue: formData?.paramName || formData?.inputParams[0]?.paramName,
-      paramValue: formData?.paramValue || formData?.inputParams[0]?.paramValue,
+      placeholderValue: formData?.paramName || formData?.inputParams?.[0]?.paramName,
+      paramValue: formData?.paramValue || formData?.inputParams?.[0]?.paramValue,
       amount: billAmount,
     });
   };
@@ -444,67 +476,64 @@ export default function BillPayment() {
                             })}
                           </div>
 
-                          {!bill && (
-                            <div className="pt-4">
-                              {isBillValidated ? (
-                                <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-emerald-50/20 p-8 rounded-[2rem] border-2 border-dashed border-emerald-100 space-y-3">
 
+                          <div className="pt-4">
+                            {isBillValidated ? (
+                              <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} className="bg-indigo-50/20 p-8 rounded-[2rem] border-2 border-dashed border-indigo-100 space-y-3">
+                                <Input
+                                  icon={IndianRupee}
+                                  label="Payment Amount (INR)"
+                                  value={bill?.amount || ""}
+                                  onChange={(e) => setBill({ ...bill, amount: formatDecimalNumberInput(e.target.value, 7) })}
+                                  placeholder="0.00"
+                                />
+                                <div className="relative group">
                                   <Input
-                                    icon={IndianRupee}
-                                    label="Payment Amount (INR)"
-                                    value={bill?.amount || ""}
-                                    onChange={(e) => setBill({ ...bill, amount: formatDecimalNumberInput(e.target.value, 7) })}
-                                    placeholder="0.00"
+                                    icon={Smartphone}
+                                    label="Customer Number"
+                                    type="text"
+                                    maxLength={10}
+                                    value={customerMobile}
+                                    onChange={(e) => setCustomerMobile(formatNumberInput(e.target.value, 10))}
+                                    placeholder="Customer Number"
                                   />
-
-
-                                  <div className="relative group">
-                                    <Input
-                                      icon={Smartphone}
-                                      label="Customer Number"
-                                      type="text"
-                                      maxLength={10}
-                                      value={customerMobile}
-                                      onChange={(e) => setCustomerMobile(formatNumberInput(e.target.value, 10))}
-                                      placeholder="Customer Number"
-                                    />
-                                  </div>
-                                  <div className="relative group">
-                                    <Input
-                                      icon={User}
-                                      label="Customer Name"
-                                      type="text"
-                                      value={customerName}
-                                      onChange={(e) => setCustomerName(formatNameInputWithSpace(e.target.value, 100))}
-                                      placeholder="Customer Name"
-                                    />
-                                  </div>
-                                  <Button
-                                    disabled={!bill?.amount || Number(bill.amount) <= 0 || !customerMobile || customerMobile.length < 10 || !customerName?.trim() || isPayingBill}
-                                    onClick={handleBillPay}
-                                    className="w-full h-12.5 rounded-xl bg-emerald-600 hover:bg-indigo-600 border-none text-white font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-98 transition-all"
-                                  >
-                                    {isPayingBill ? <Loader2 className="animate-spin" size={20} /> : "Complete Transaction"}
-                                  </Button>
-                                </motion.div>
-                              ) : (
+                                </div>
+                                <div className="relative group">
+                                  <Input
+                                    icon={User}
+                                    label="Customer Name"
+                                    type="text"
+                                    value={customerName}
+                                    onChange={(e) => setCustomerName(formatNameInputWithSpace(e.target.value, 100))}
+                                    placeholder="Customer Name"
+                                  />
+                                </div>
                                 <Button
-                                  disabled={isLoadingBillers || isLoadingBillerField || isFetchingBill || isValidatingBill || isButtonDisable}
-                                  onClick={billerInfo?.billerFetchRequiremet === "MANDATORY" ? handleBillFetch : handleBillValidate}
-                                  className="w-full h-12.5 rounded-xl bg-indigo-600 hover:bg-indigo-600 border-none text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2.5 active:scale-98 transition-all group"
+                                  disabled={!bill?.amount || Number(bill.amount) <= 0 || !customerMobile || customerMobile.length < 10 || !customerName?.trim() || isPayingBill}
+                                  onClick={handleBillPay}
+                                  className="w-full  rounded-xl bg-indigo-600 hover:bg-indigo-700 border-none text-white font-black text-[11px] uppercase tracking-widest shadow-lg active:scale-98 transition-all"
                                 >
-                                  {(isFetchingBill || isValidatingBill) ? (
-                                    <Loader2 className="animate-spin" size={20} />
-                                  ) : (
-                                    <>
-                                      {billerInfo?.billerFetchRequiremet === "MANDATORY" ? "Process Live Bill" : "Verify Information"}
-                                      <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                                    </>
-                                  )}
+                                  {isPayingBill ? <Loader2 className="animate-spin" size={20} /> : "Complete Transaction"}
                                 </Button>
-                              )}
-                            </div>
-                          )}
+                              </motion.div>
+                            ) : (
+                              <Button
+                                disabled={isLoadingBillers || isLoadingBillerField || isFetchingBill || isValidatingBill || isButtonDisable}
+                                onClick={billerInfo?.billerFetchRequiremet === "MANDATORY" ? handleBillFetch : handleBillValidate}
+                                className="w-full h-12.5 rounded-xl bg-indigo-600 hover:bg-indigo-600 border-none text-white font-black text-[10px] uppercase tracking-widest shadow-lg shadow-indigo-600/20 flex items-center justify-center gap-2.5 active:scale-98 transition-all group"
+                              >
+                                {(isFetchingBill || isValidatingBill) ? (
+                                  <Loader2 className="animate-spin" size={20} />
+                                ) : (
+                                  <>
+                                    {billerInfo?.billerFetchRequiremet === "MANDATORY" ? "Process Live Bill" : "Verify Information"}
+                                    <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                                  </>
+                                )}
+                              </Button>
+                            )}
+                          </div>
+
                         </motion.div>
                       )}
                     </AnimatePresence>
@@ -513,21 +542,39 @@ export default function BillPayment() {
               </div>
 
               {/* Right Column: Receipt Section */}
-              <div className="w-full lg:w-[440px] lg:sticky lg:top-4 self-start">
-                <BillReceipt
-                  bill={bill}
-                  customerMobile={customerMobile}
-                  setCustomerMobile={setCustomerMobile}
-                  setBill={setBill}
-                  isPaying={isPayingBill}
-                  onPay={handleBillPay}
-                />
-              </div>
+              {
+                showBillReceipt &&
+                <div className="w-full lg:w-[440px] lg:sticky lg:top-4 self-start">
+                  <BillReceipt
+                    bill={bill}
+                    customerMobile={customerMobile}
+                    setCustomerMobile={setCustomerMobile}
+                    setBill={setBill}
+                    isPaying={isPayingBill}
+                    onPay={handleBillPay}
+                  />
+                </div>
+              }
             </div>
           </motion.div>
         )}
 
       </AnimatePresence>
+
+      {recieptModalData.isOpen && (
+
+        <ReceiptModal
+          title={recieptModalData.title}
+          // date={recieptModalData.date}
+          subTitleLabel={recieptModalData.subTitleLabel}
+          subTitleValue={recieptModalData.subTitleValue}
+          receiptData={recieptModalData.receiptData}
+          onClose={() => {
+            setRecieptModalData({ title: "", date: "", subTitleLabel: "", subTitleValue: "", receiptData: {}, isOpen: false });
+            handleBack()
+          }}
+        />
+      )}
     </PageLayout>
   );
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { useSelector, useDispatch } from "react-redux"
 import { createPortal } from "react-dom"
 import { motion, AnimatePresence } from "framer-motion"
-import { format, addDays } from "date-fns"
+import { format, addDays, set } from "date-fns"
 import {
   ChevronLeft,
   ChevronRight,
@@ -435,8 +435,14 @@ export default function Dashboard() {
     from: undefined,
     to: undefined
   });
+  const [serviceReportsYearly, setServiceReportsYearly] = useState({
+    data: [],
+    minRange: 0,
+    maxRange: 100,
+    range: [100, 80, 60, 40, 20, 0]
+  })
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState("All Services");
+  const [selectedService, setSelectedService] = useState("");
   const calendarRef = useRef(null);
 
   // Responsive check for portal
@@ -473,14 +479,9 @@ export default function Dashboard() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const serviceOptions = [
-    { label: "All Services", value: "All Services" },
-    { label: "AEPS Withdrawal", value: "AEPS Withdrawal" },
-    { label: "BBPS Payments", value: "BBPS Payments" },
-    { label: "DMT Transfer", value: "DMT Transfer" },
-    { label: "Payout Settlements", value: "Payout Settlements" },
-    { label: "Mobile Recharge", value: "Mobile Recharge" }
-  ];
+  const [serviceOptions, setServiceOptions] = useState([
+
+  ]);
 
   const handleReset = () => {
     setDate({ from: undefined, to: undefined });
@@ -488,6 +489,51 @@ export default function Dashboard() {
   const handleSearch = () => {
     console.log("Filtering dashboard overview for:", date);
   };
+  const { refetch: fetchServicesList } = useFetch(
+    `${apiEndpoints.allServiceList}`,
+    {
+      onSuccess: (data) => {
+        if (data && data.data && data.success) {
+          const temp = data.data.map((item) => ({ ...item, label: item.label, value: item.name }))
+          setServiceOptions(temp)
+          setSelectedService(temp[0].name)
+
+          console.log(data)
+        }
+      },
+      onError: (error) => {
+        console.log("error in servicesList data", error);
+        toast.error(handleValidationError(error) || "Something went wrong");
+      },
+    },
+    true,
+  );
+
+  const { refetch: fetchServiceReportsYearly } = useFetch(
+    `${apiEndpoints.fetchServiceReportsYearly}`,
+    {
+      onSuccess: (data) => {
+        if (data && data.data && data.success) {
+          const range = data.data.map((item) => {
+            return item.amount
+          })
+          const min = Math.floor(Math.min(...range) / 100) * 100;
+          const max = Math.ceil(Math.max(...range) / 100) * 100;
+          const points = 6;
+          const step = (max - min) / (points - 1);
+          const steps = Array.from({ length: points }, (_, i) => max - i * step);
+          setServiceReportsYearly({ data: data.data, minRange: min, maxRange: max, range: steps })
+
+        }
+      },
+      onError: (error) => {
+        console.log("error in serviceReportsYearly data", error);
+        toast.error(handleValidationError(error) || "Something went wrong");
+      },
+    },
+    true,
+  );
+  console.log(serviceReportsYearly)
   const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
 
 
@@ -652,78 +698,53 @@ export default function Dashboard() {
               <div className="flex items-center justify-between mb-8 z-10">
                 <div className="flex flex-col gap-1">
                   <span className="text-[11px] font-black text-slate-400/80 uppercase tracking-widest leading-none">Order Statistics</span>
-                  <h4 className="text-xl font-black text-slate-900 tracking-tightest leading-none mt-1">Total Payouts</h4>
+                  <h4 className="text-xl font-black text-slate-900 tracking-tightest leading-none mt-1">Xpress Payout</h4>
                 </div>
               </div>
 
               <div className="relative flex-1 w-full z-10 mt-2">
                 {/* Y-Axis Labels */}
                 <div className="absolute inset-y-0 left-0 flex flex-col justify-between py-1 text-[10px] font-bold text-slate-300 pointer-events-none pb-5">
-                  <span>100</span>
-                  <span>80</span>
-                  <span>60</span>
-                  <span>40</span>
-                  <span>20</span>
-                  <span>0</span>
+                  {serviceReportsYearly?.range?.map((step) => (
+                    <span>{step}</span>
+                  ))}
                 </div>
 
                 <div className="ml-10 h-full relative">
-                  {/* Horizontal Grid Lines */}
-                  {[0, 20, 40, 60, 80].map((line) => (
-                    <div key={line}
-                      className="absolute w-full h-px bg-slate-50"
-                      style={{ bottom: `${line}%` }}
-                    />
-                  ))}
+
 
                   {/* Bars Grid */}
                   <div className="absolute inset-0 flex items-end justify-between px-2 pb-1">
-                    {[
-                      { label: 'Jan', fullLabel: 'January', val: 40 },
-                      { label: 'Feb', fullLabel: 'February', val: 32 },
-                      { label: 'Mar', fullLabel: 'March', val: 65 },
-                      { label: 'Apr', fullLabel: 'April', val: 48 },
-                      { label: 'May', fullLabel: 'May', val: 75 },
-                      { label: 'Jun', fullLabel: 'June', val: 60 },
-                      { label: 'Jul', fullLabel: 'July', val: 85, peak: true, amount: '₹ 50.00K' },
-                      { label: 'Aug', fullLabel: 'August', val: 72 },
-                      { label: 'Sep', fullLabel: 'September', val: 78 },
-                      { label: 'Oct', fullLabel: 'October', val: 55 },
-                      { label: 'Nov', fullLabel: 'November', val: 45 },
-                      { label: 'Dec', fullLabel: 'December', val: 50 },
-                    ].map((bar, i) => (
+                    {serviceReportsYearly?.data?.map((bar, i) => (
                       <div key={i} className="flex flex-col items-center gap-3 w-[6.5%] group/bar relative">
-                        {bar.peak && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="absolute -top-10 bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-black text-[9px] shadow-lg shadow-emerald-200 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-emerald-600 z-20 whitespace-nowrap"
-                          >
-                            {bar.amount}
-                          </motion.div>
-                        )}
+                        <div className="absolute -top-10 bg-emerald-600 text-white px-3 py-1.5 rounded-xl font-black text-[9px] shadow-lg shadow-emerald-200 after:content-[''] after:absolute after:top-full after:left-1/2 after:-translate-x-1/2 after:border-4 after:border-transparent after:border-t-emerald-600 z-20 whitespace-nowrap opacity-0 group-hover/bar:opacity-100 transition-opacity duration-200">
+                          {bar.amount}
+                        </div>
 
-                        <div className="w-full relative flex flex-col gap-0" style={{ height: `${bar.val * 1.6}px` }}>
+                        <div className="w-full relative flex flex-col gap-0" style={{
+                          height: `${Math.min(bar?.amount * 1.45, 160)}px`
+                        }}>
                           <div className={cn(
-                            "h-1/2 w-full rounded-[1rem] relative z-10 shadow-sm transition-all duration-500 group-hover/bar:bg-indigo-600",
-                            bar.peak ? "bg-emerald-500" : "bg-emerald-500/80"
+                            "h-1/2 w-full rounded-[1rem] relative z-10 shadow-sm bg-emerald-500 transition-all duration-500 ",
                           )} />
                           <div className="flex-1 w-full bg-slate-50 relative mt-[-10px] rounded-b-[1rem] overflow-hidden">
                             <svg className="w-full h-full">
                               <pattern id={`hashPattern-${i}`} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-                                <rect width="1.5" height="8" fill={bar.peak ? "#10b98120" : "#cbd5e140"} />
+                                <rect width="1.5" height="8" fill={"#10b98120"} />
                               </pattern>
                               <rect width="100%" height="100%" fill={`url(#hashPattern-${i})`} />
                             </svg>
                           </div>
                         </div>
                         <span className="text-[8px] sm:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none truncate w-full text-center">
-                          <span className="hidden xl:inline">{bar.label}</span>
-                          <span className="xl:hidden">{bar.label.charAt(0)}</span>
+                          <span className="hidden xl:inline">{bar?.month?.slice(0, 3)}</span>
+                          <span className="xl:hidden">{bar?.month?.slice(0, 1)}</span>
                         </span>
                       </div>
                     ))}
                   </div>
+
+
                 </div>
               </div>
             </motion.div>
@@ -815,7 +836,7 @@ export default function Dashboard() {
                 <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] md:text-[11px] leading-none mt-1">Service Performance Overview</p>
               </div>
             </div>
-            <Button variant="outline" className="hidden md:flex rounded-xl h-10 font-black text-[9px] uppercase tracking-widest border-slate-200">View History</Button>
+
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-7 px-2">
@@ -890,7 +911,7 @@ export default function Dashboard() {
                 <p className="text-slate-400 font-bold uppercase tracking-[0.2em] text-[10px] md:text-[11px] leading-none mt-1">Access your core business tools</p>
               </div>
             </div>
-            <Button variant="ghost" className="text-blue-600 hover:bg-blue-50 px-6 h-10 rounded-xl font-black text-[10px] uppercase tracking-widest">Explore All</Button>
+
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">

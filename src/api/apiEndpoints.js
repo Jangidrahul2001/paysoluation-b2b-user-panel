@@ -33,6 +33,7 @@ export const apiEndpoints = {
 
   //dashboard
   fetchTopupDetailsStats: "/user/dashboard/topup-stats",
+  fetchServiceReportsYearly: "/user/dashboard/payout-stats?serviceType=xpress",
 
   // service
   fetchServiceWithPipeline: "/user/service/list",
@@ -100,6 +101,11 @@ export const apiEndpoints = {
   rechargeReports: "/user/rechargeReport/complete-recharge-report",
   rechargeReportById: "/user/rechargeReport/report",
 
+  // service wiserequest bbps
+  bbpsStats: "/user/bbpsReport/bbps-stats",
+  bbpsReports: "/user/bbpsReport/complete-bbps-report",
+  bbpsReportById: "/user/bbpsReport/report",
+
   // service wiserequest aeps1
   aeps1stats: "/user/insAepsReport/aeps-stats",
   aeps1Reports: "/user/insAepsReport/complete-aeps-report",
@@ -127,9 +133,6 @@ export const apiEndpoints = {
 
   // smart transaction
   transactionSearch: "/user/search/transaction-search",
-
-  bbpsStats: "/user/bbpsReport/bbps-stats",
-  bbpsReports: "/user/bbpsReport/complete-bbps-report",
 
   //  commision plan
   myCommissionPlan: "/user/commissionPlan/my-commission-plan",

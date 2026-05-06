@@ -8,9 +8,11 @@ import { usePost } from '../../hooks/usePost';
 import { toast } from 'sonner';
 import { apiEndpoints } from '../../api/apiEndpoints';
 import { fetchPublicIp, formatNumberInput, formatToINR, handleValidationError } from '../../utils/helperFunction';
+import { useSelector } from 'react-redux';
 
 const TransferModal = ({ isOpen, onClose, details, setRecieptModalData }) => {
-    console.log(details, "detaillslslslsl")
+    const { data: wallet, error: walletError, loading: walletLoading } = useSelector((state) => state.wallet);
+    console.log(wallet)
     const [amount, setAmount] = useState('');
     const [otp, setOtp] = useState('');
     const [otpSent, setOtpSent] = useState(false);
@@ -142,6 +144,10 @@ const TransferModal = ({ isOpen, onClose, details, setRecieptModalData }) => {
             toast.error("Beneficiary details not found. Please try again.");
             return;
         }
+        if (parseFloat(amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
+            toast.error("Amount must be less than wallet balance");
+            return
+        }
 
         generateOtp({
             amount: parseFloat(amount),
@@ -171,6 +177,10 @@ const TransferModal = ({ isOpen, onClose, details, setRecieptModalData }) => {
         if (!details || !details.mobileNumber || !details.account_no) {
             toast.error("Beneficiary details not found. Please try again.");
             return;
+        }
+        if (parseFloat(amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
+            toast.error("Amount must be less than wallet balance");
+            return
         }
 
         transferPayment({

@@ -150,6 +150,7 @@ export default function TransactionDetailPage() {
     "recharge": "rechargeReportById",
     "xpress-payout": "xpressPayoutReportById",
     "aeps-payout": "aepsPayoutReportById",
+    bbps: "bbpsReportById"
 
   }
 
@@ -383,6 +384,23 @@ export default function TransactionDetailPage() {
         isOpen: true
       });
     }
+    else if (service === 'bbps') {
+      setRecieptModalData({
+        title: "Transaction Successful",
+        date: formatDate(data?.createdAt),
+        subTitleLabel: "amount",
+        subTitleValue: formatToINR(data?.amount),
+        receiptData: {
+          "Category": data?.category || "",
+          "bill Number": data?.billNumber || "",
+          "Customer Name": data?.customerName || "",
+          "Customer Mobile": data?.customerMobile || "",
+          "Transaction Id": data?.referenceId || "",
+          status: "Transaction Successful"
+        },
+        isOpen: true
+      });
+    }
   }
 
   return (
@@ -402,6 +420,7 @@ export default function TransactionDetailPage() {
       }
     >
   
+
       <div className="w-full pb-20 space-y-5">
 
         {/* --- DYNAMIC HEADER TILES --- */}
@@ -455,6 +474,10 @@ export default function TransactionDetailPage() {
                   <DetailItem label="Operator " value={data.operatorName} icon={Smartphone} color="indigo" />
                 }
                 {
+                  data.category &&
+                  <DetailItem label="Category" value={data.category} icon={Tag} color="indigo" />
+                }
+                {
                   data.mobileNumber &&
                   <DetailItem label="Recharged Mobile Number" value={data.mobileNumber} icon={Smartphone} color="indigo" />
                 }
@@ -492,6 +515,15 @@ export default function TransactionDetailPage() {
                 {
                   data.beneficiaryPhone &&
                   <DetailItem label="Beneficiary Phone" value={data.beneficiaryPhone} icon={PhoneCall} color="indigo" />
+                }
+                {
+                  (data.customerName) &&
+                  <DetailItem label="Customer Name" value={data.customerName} icon={Tag} color="indigo" />
+                }
+
+                {
+                  data.customerMobile &&
+                  <DetailItem label="Customer Phone" value={data.customerMobile} icon={PhoneCall} color="indigo" />
                 }
 
                 {

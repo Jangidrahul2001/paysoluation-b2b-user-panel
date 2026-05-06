@@ -34,6 +34,8 @@ import { ActionButtons } from '../components/ui/ActionButton';
 import AddAccountUpiPayout from '../modal/AddAccountUpiPayout';
 
 export default function UpiPayout() {
+
+  const { data: wallet, error: walletError, loading: walletLoading } = useSelector((state) => state.wallet);
   const [formData, setFormData] = useState({
     mobile: '',
     amount: '',
@@ -293,6 +295,10 @@ export default function UpiPayout() {
     else if (parseFloat(formData?.amount) > 10000) {
       tempErrors.amount = "Amount must be less than 10000";
     }
+    else if (parseFloat(formData?.amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
+      tempErrors.amount = "Amount must be less than wallet balance";
+
+    }
     if (formData?.purpose.trim() === '') {
       tempErrors.purpose = "Reason is required";
     }
@@ -350,11 +356,9 @@ export default function UpiPayout() {
   });
 
   const handleTransfer = () => {
-    console.log("Xpress Transfer Initiated", formData);
     if (validate()) {
       setIsTransferingMoney(true);
       xpresspayoutInitiateTransaction(formData)
-
     }
 
   };
