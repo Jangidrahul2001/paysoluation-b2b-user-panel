@@ -1,411 +1,252 @@
 import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   CheckCircle2,
   XCircle,
   Clock,
   IndianRupee,
-  ArrowDownLeft,
-  ArrowUpRight,
   User,
   Hash,
-  Wallet,
-  RotateCcw,
-  Zap,
-  Terminal,
-  Activity,
-  ChevronLeft,
-  ChevronRight,
-  ArrowRight,
-  Flame,
-  Download,
-  Info,
-  ExternalLink,
-  HelpCircle,
-  AlertCircle,
-  ShieldCheck,
-  CreditCard,
-  History,
-  Stamp,
+  Calendar,
+  Tag,
+  FileText,
   Copy,
-  Receipt,
-  Eye,
-  ArrowDownCircle,
-  ArrowUpCircle,
-  Globe,
-  Settings,
-  Cpu,
-  Monitor,
   Phone,
   Mail,
-  Building2,
-  FileText
+  RefreshCw,
+  TrendingUp,
+  TrendingDown,
+  Zap,
+  ShieldCheck,
+  Activity
 } from 'lucide-react';
 import { PageLayout } from '../components/layout/PageLayout';
-import { Button } from '../components/ui/Button';
-import { DataTable } from '../components/ui/DataTable';
 import { cn } from '../lib/utils';
 import { toast } from 'sonner';
+import { formatDate, formatToINR } from '../utils/helperFunction';
 
-
-// --- Mock Data ---
-const TXN_DATA = {
- 
+// Mock data based on wallet ledger structure
+const TRANSACTION_DATA = {
+  _id: "507f1f77bcf86cd799439011",
+  createdAt: "2024-03-10T10:05:57.000Z",
+  fullName: "Camlenio Software",
+  userName: "camlenio123",
+  email: "contact@camlenio.com",
+  phone: "+91 9876543210",
+  serviceType: "BBPS",
+  serviceCategory: "UTILITY BILLS",
+  entryType: "REFUND",
+  referenceId: "FUTS98DRD351O27C7Z570XM14V482611025",
+  openingBalance: 2109.61,
+  amount: 948.00,
+  commission: 0.25,
+  charge: 0.00,
+  gstAmount: 0.00,
+  tdsAmount: 0.00,
+  closingBalance: 3057.61,
+  type: "credit",
+  status: "failed",
+  description: "BBPS Failed Refund - Provider Timeout"
 };
 
-// --- Sub-Components ---
+// Metric Card Component
+const MetricCard = ({ label, value, subLabel, icon: Icon, variant = "blue" }) => {
+  const bgColors = {
+    blue: "from-blue-600 to-indigo-800 shadow-blue-500/10",
+    emerald: "from-emerald-600 to-teal-700 shadow-emerald-500/10",
+    rose: "from-rose-600 to-red-700 shadow-rose-500/10",
+    amber: "from-amber-500 to-orange-600 shadow-amber-500/10",
+    dark: "from-slate-900 to-black shadow-slate-900/20",
+  };
 
-const BalancedCard = ({ children, className, title, icon: Icon, colorClass = "text-slate-800" }) => (
-  <motion.div
-    initial={{ y: 20, opacity: 0 }}
-    animate={{ y: 0, opacity: 1 }}
-    className={cn(
-      "bg-white rounded-[2rem] border border-slate-100 shadow-sm overflow-hidden flex flex-col h-full",
-      className
-    )}
-  >
-    {title && (
-      <div className="px-4 py-3.5 sm:px-7 sm:py-4 border-b border-slate-200/50 flex items-center justify-between bg-slate-50/30 shrink-0">
-        <div className="flex items-center gap-3 min-w-0 pr-4">
-          {Icon && <Icon size={16} className={cn(colorClass, "shrink-0")} />}
-          <h3 className={cn("text-[10px] font-black uppercase tracking-[0.2em] truncate", colorClass)}>{title}</h3>
+  return (
+    <div className={cn("relative overflow-hidden rounded-2xl p-5 text-white bg-gradient-to-br shadow-md transition-transform hover:-translate-y-0.5 duration-300", bgColors[variant])}>
+      <div className="absolute -top-1 -right-1 p-3 opacity-10 text-white">
+        <Icon className="w-16 h-16 rotate-12" />
+      </div>
+      <div className="relative z-10 space-y-3">
+        <div className="flex items-center gap-2 opacity-80">
+          <Icon className="w-3 h-3 text-white" />
+          <p className="text-[9px] font-black uppercase tracking-[0.2em]">{label}</p>
         </div>
-        <div className="h-1.5 w-1.5 rounded-full bg-slate-200 shrink-0" />
+        <div className="text-left">
+          <h3 className="text-xl font-black tracking-tighter tabular-nums leading-none mb-1">{value}</h3>
+          <p className="text-[9px] font-bold opacity-70 uppercase tracking-widest line-clamp-1">{subLabel}</p>
+        </div>
       </div>
-    )}
-    <div className="p-2 sm:p-4 flex-1 flex flex-col justify-start">
-      {children}
     </div>
-  </motion.div>
-);
+  );
+};
 
-const DetailRow = ({ label, value, icon: Icon, color = "text-slate-700" }) => (
-  <div className="flex items-center justify-between py-3 border-b border-slate-50 last:border-none group gap-3">
-    <div className="flex items-center gap-3 shrink-0 min-w-0">
-      <div className="h-8 w-8 rounded-xl bg-slate-50 flex shrink-0 items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-        {Icon ? <Icon size={14} /> : <div className="h-1 w-1 rounded-full bg-current" />}
-      </div>
-      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">{label}</p>
-    </div>
-    <div className="flex items-center justify-end gap-3 flex-1 min-w-0">
-      <p className={cn("flex-1 min-w-0 text-sm font-black tracking-tight text-right break-all sm:break-words", color)} title={typeof value === 'string' ? value : undefined}>{value}</p>
-    </div>
-  </div>
-);
-
-const BalancedStat = ({ label, value, icon: Icon, colorClass = "text-slate-900" }) => (
-  <div className="flex flex-col gap-1.5">
-    <div className="flex items-center gap-2">
-      {Icon && <Icon size={12} className="text-slate-400" />}
-      <p className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{label}</p>
-    </div>
-    <p className={cn("text-sm font-black tracking-tight", colorClass)}>{value}</p>
-  </div>
-);
-
-export default function WalletTransactionDetails() {
-  const navigate = useNavigate();
-  const [pageIndex, setPageIndex] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [columnVisibility, setColumnVisibility] = useState({});
-
+// Detail Item Component
+const DetailItem = ({ label, value, icon: Icon, color = "indigo" }) => {
+  const colors = {
+    indigo: "text-[#2f35cd] bg-[#2f35cd]/8 border-[#2f35cd]/20",
+    emerald: "text-emerald-700 bg-emerald-50 border-emerald-200",
+    rose: "text-rose-700 bg-rose-50 border-rose-200",
+    amber: "text-amber-700 bg-amber-50 border-amber-200",
+    slate: "text-slate-600 bg-slate-100 border-slate-200",
+  };
 
   const handleCopy = (text) => {
     navigator.clipboard.writeText(text);
-    toast.success("ID Copied");
+    toast.success("Copied to clipboard");
   };
 
-
-
-  const columns = [{
-    header: "SR.NO.",
-    accessorKey: "id",
-    cell: ({ row }) => <span className="text-[12px] font-bold text-slate-300">{(pageIndex - 1) * pageSize + row.index + 1}</span>,
-  },
-  {
-    accessorKey: "amount",
-    header: "TRANSACTION AMOUNT",
-    cell: ({ row }) => <span className="font-black text-slate-700 text-[13px] tabular-nums">₹ {row.original.amount.toFixed(2)}</span>
-  },
-  {
-    accessorKey: "commission",
-    header: "SERVICE COMMISSION (+)",
-    cell: ({ row }) => <span className="font-black text-emerald-600 text-[13px] tabular-nums">+ ₹ {row.original.commission.toFixed(2)}</span>
-  },
-  {
-    accessorKey: "charges",
-    header: "PROCESSING CHARGES (-)",
-    cell: ({ row }) => <span className="font-black text-rose-500 text-[13px] tabular-nums">- ₹ {row.original.charges.toFixed(2)}</span>
-  },
-  {
-    accessorKey: "gst",
-    header: "GST (INCLUSIVE 0%)",
-    cell: () => <span className="font-bold text-slate-400 text-[12px] tabular-nums">₹ 0.00</span>
-  },
-  {
-    accessorKey: "tds",
-    header: "TDS RETENTION",
-    cell: () => <span className="font-bold text-slate-400 text-[12px] tabular-nums">₹ 0.00</span>
-  },
-  {
-    accessorKey: "netAmount",
-    header: "NET SETTLEMENT VALUE",
-    cell: ({ row }) => (
-      <div className=" px-3 py-1 rounded-lg">
-        <span className="font-black text-indigo-600 text-sm tabular-nums">₹ {row.original.netAmount.toFixed(2)}</span>
+  return (
+    <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl transition-all hover:bg-white hover:shadow-sm group border border-slate-100/80 hover:border-slate-200">
+      <div className={cn("h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center border shrink-0 transition-all group-hover:scale-105", colors[color])}>
+        <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
       </div>
-    )
-  }
-  ]
+      <div className="flex flex-col min-w-0 text-left flex-1">
+        <span className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{label}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] sm:text-[12px] font-bold text-slate-800 tracking-tight truncate flex-1">{value}</span>
+          {(label.toLowerCase().includes('id') || label.toLowerCase().includes('reference')) && (
+            <button
+              onClick={() => handleCopy(value)}
+              className="text-slate-300 hover:text-indigo-600 transition-colors active:scale-90 shrink-0"
+            >
+              <Copy size={12} />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
+export default function WalletTransactionDetails() {
+  const navigate = useNavigate();
+  const { id } = useParams();
+
+  // Get status variant for metric card
+  const getStatusVariant = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'success': return 'emerald';
+      case 'failed': return 'rose';
+      case 'pending': return 'amber';
+      case 'refund': return 'blue';
+      default: return 'dark';
+    }
+  };
+
+  // Get type color
+  const getTypeColor = (type) => {
+    return type?.toLowerCase() === 'credit' ? 'text-emerald-600' : 'text-rose-600';
+  };
 
   return (
     <PageLayout
-      title="Transaction Audit Console"
-      subtitle={`Global Reference: ${TXN_DATA.details.referenceId}`}
+      title="Wallet Transaction Details"
+      subtitle={`Transaction Reference: ${TRANSACTION_DATA.referenceId}`}
       showBackButton
       className="max-w-[1600px] mx-auto py-4"
     >
       <div className="space-y-6 px-2 sm:px-6">
 
-        {/* Section 1: Top Professional Header */}
-        <div className="w-full bg-white rounded-[2.5rem] p-5 min-[1160px]:p-8 2xl:p-10 flex flex-col min-[1160px]:flex-row items-stretch min-[1160px]:items-center justify-between gap-6 shadow-sm border border-slate-100 relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-50/50 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none" />
-          {/* Amount & Status */}
-          <div className="flex items-center gap-4 xl:gap-6 shrink-0 w-full min-[1160px]:w-auto min-w-0 relative z-10">
-            <div className="h-12 w-12 xl:h-14 2xl:h-16 min-w-[2.5rem] xl:min-w-[3rem] 2xl:min-w-[3.5rem] shrink-0 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 border border-indigo-100 transition-transform group-hover:scale-110 duration-500">
-              <IndianRupee className="w-6 h-6 xl:w-7 2xl:w-8" />
-            </div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] xl:text-[11px] font-black text-slate-400 uppercase tracking-[0.25em] mb-1 xl:mb-2 truncate">Transaction Amount</p>
-              <div className="flex flex-wrap sm:flex-nowrap items-baseline sm:items-center gap-3">
-                <h2 className="text-2xl xl:text-3xl 2xl:text-4xl font-black text-slate-900 tracking-tightest leading-none truncate">
-                  <span className="text-slate-300 mr-1 xl:mr-2">₹</span>
-                  {TXN_DATA.amount.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
-                </h2>
-                <span className={cn(
-                  "px-2.5 py-1 rounded-lg text-[9px] xl:text-[10px] font-black uppercase shrink-0 self-start sm:self-auto shadow-sm",
-                  TXN_DATA.status === 'FAILED'
-                    ? "bg-rose-50 text-rose-600 border border-rose-100"
-                    : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                )}>
-                  {TXN_DATA.status}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider — horizontal on mobile/stacked, vertical on desktop row */}
-          <div className="w-full h-px min-[1160px]:w-px min-[1160px]:h-16 bg-white/10 shrink-0" />
-
-          {/* Metrics */}
-          <div className="flex-1 min-w-0 grid grid-cols-2 sm:grid-cols-3 2xl:flex 2xl:flex-row 2xl:flex-wrap items-start 2xl:items-center gap-6 2xl:gap-x-0 2xl:gap-y-4 2xl:justify-between pb-2 2xl:pb-0">
-            {[
-              { label: "Service Name", value: TXN_DATA.details.service, color: "text-slate-600" },
-              { label: "Category", value: TXN_DATA.serviceCategory, color: "text-slate-600" },
-              { label: "Txn ID", value: TXN_DATA.id, color: "text-slate-600" },
-              { label: "Charges", value: `₹ ${TXN_DATA.details.charges.toFixed(2)}`, color: "text-rose-400" },
-              { label: "Commission", value: `₹ ${TXN_DATA.details.commission.toFixed(2)}`, color: "text-emerald-400" },
-              { label: "Net Amount", value: `₹ ${TXN_DATA.details.netAmount.toFixed(2)}`, color: "text-indigo-400" },
-            ].map(({ label, value, color }) => (
-              <div key={label} className="flex flex-col gap-1.5 2xl:px-4 2xl:border-r 2xl:border-white/10 last:border-0 min-w-0 max-w-full">
-                <p className="text-[12px] font-black uppercase text-slate-800 tracking-widest leading-none mb-0.5">{label}</p>
-                <p className={cn("text-[12px] font-black break-all whitespace-normal leading-relaxed", color)}>{value}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Divider */}
-          <div className="w-full h-px min-[1160px]:w-px min-[1160px]:h-16 bg-white/10 shrink-0" />
-
-          {/* Button */}
-          <div className="w-full min-[1160px]:w-auto shrink-0">
-            <Button
-              onClick={() => window.print()}
-              className="w-full min-[1160px]:w-auto h-12 px-8 rounded-2xl bg-slate-600 hover:bg-slate-700 text-white font-bold text-xs gap-2 transition-transform active:scale-95"
-            >
-              <Download size={16} /> Print Receipt
-            </Button>
-          </div>
-        </div>
-
-        {/* Section 3: Identity & Specs (Top) */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
-          <BalancedCard title="Customer Identity" icon={User} colorClass="text-indigo-600">
-            <div className="space-y-2">
-              <DetailRow label="Customer Name" value={TXN_DATA.details.user.split('(')[0].trim() || "N/A"} icon={User} color="text-slate-800" />
-              <DetailRow label="User ID" value="USR-890121" icon={Hash} color="text-slate-800" />
-              <DetailRow label="Mobile Number" value="+91 9876543210" icon={Phone} color="text-slate-800" />
-              <DetailRow label="Email ID" value="contact@Pay Soluation.com" icon={Mail} color="text-indigo-600" />
-            </div>
-          </BalancedCard>
-
-          <BalancedCard title="Technical Specs" icon={Hash} colorClass="text-indigo-600">
-            <div className="flex flex-col">
-              {/* Client Ref ID */}
-              <div className="flex items-center justify-between py-3 border-b border-slate-50 group gap-2">
-                <div className="flex items-center gap-3 shrink-0 min-w-0">
-                  <div className="h-8 w-8 rounded-xl bg-slate-50 flex shrink-0 items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                    <div className="h-1 w-1 rounded-full bg-current" />
-                  </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block break-words">Client Ref ID</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:hidden break-words">Client Ref</p>
-                </div>
-                <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[12px] font-mono font-black tracking-tight text-slate-800 break-all sm:break-words" title={TXN_DATA.details.clientRefId}>{TXN_DATA.details.clientRefId}</p>
-                  <button onClick={() => handleCopy(TXN_DATA.details.clientRefId)} className="text-slate-300 hover:text-indigo-600 transition-colors active:scale-90 shrink-0"><Copy size={13} /></button>
-                </div>
-              </div>
-
-              {/* Agent ID */}
-              <div className="flex items-center justify-between py-3 border-b border-slate-50 group gap-2">
-                <div className="flex items-center gap-3 shrink-0 min-w-0">
-                  <div className="h-8 w-8 rounded-xl bg-slate-50 flex shrink-0 items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                    <div className="h-1 w-1 rounded-full bg-current" />
-                  </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">Agent ID</p>
-                </div>
-                <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[12px] font-mono font-black tracking-tight text-slate-800 break-all sm:break-words" title="CC01RP68AGTBAA004669">CC01RP68AGTBAA004669</p>
-                  <button onClick={() => handleCopy("CC01RP68AGTBAA004669")} className="text-slate-300 hover:text-indigo-600 transition-colors active:scale-90 shrink-0"><Copy size={13} /></button>
-                </div>
-              </div>
-
-              {/* Operator Live ID */}
-              <div className="flex items-center justify-between py-3 border-b border-slate-50 group gap-2">
-                <div className="flex items-center gap-3 shrink-0 min-w-0">
-                  <div className="h-8 w-8 rounded-xl bg-slate-50 flex shrink-0 items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                    <div className="h-1 w-1 rounded-full bg-current" />
-                  </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden sm:block break-words">Operator Live ID</p>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest sm:hidden break-words">Operator</p>
-                </div>
-                <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[12px] font-mono font-black tracking-tight text-slate-800 break-all sm:break-words" title={TXN_DATA.bbpsDetails?.txnRef || "N/A"}>{TXN_DATA.bbpsDetails?.txnRef || "N/A"}</p>
-                  <button onClick={() => handleCopy(TXN_DATA.bbpsDetails?.txnRef || "N/A")} className="text-slate-300 hover:text-indigo-600 transition-colors active:scale-90 shrink-0"><Copy size={13} /></button>
-                </div>
-              </div>
-
-              {/* UTR Number */}
-              <div className="flex items-center justify-between py-3 last:border-none group gap-2">
-                <div className="flex items-center gap-3 shrink-0 min-w-0">
-                  <div className="h-8 w-8 rounded-xl bg-slate-50 flex shrink-0 items-center justify-center text-slate-400 group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-colors">
-                    <div className="h-1 w-1 rounded-full bg-current" />
-                  </div>
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest break-words">UTR Number</p>
-                </div>
-                <div className="flex flex-1 items-center justify-end gap-2 sm:gap-3 min-w-0">
-                  <p className="flex-1 min-w-0 text-right text-[12px] font-mono font-black tracking-tight text-slate-800 break-all sm:break-words" title={TXN_DATA.details.utrNumber}>{TXN_DATA.details.utrNumber}</p>
-                  <button onClick={() => handleCopy(TXN_DATA.details.utrNumber)} className="text-slate-300 hover:text-indigo-600 transition-colors active:scale-90 shrink-0"><Copy size={13} /></button>
-                </div>
-              </div>
-            </div>
-          </BalancedCard>
-        </div>
-
-        {/* Section 4: Financial Table (Bottom) */}
-        <div className="space-y-4">
-          <div className="flex items-center gap-3 px-2">
-            <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
-            <h3 className="text-xl font-black text-slate-900 tracking-tight">Financial Precision</h3>
-          </div>
-
-          <DataTable
-            pageSize={10}
-            totalRecords={100}
-            isLoading={false}
-            hidePagination={true}
-            noPadding={false}
-            columns={columns}
-            data={[TXN_DATA.details]}
-            columnVisibility={columnVisibility}
-            setColumnVisibility={setColumnVisibility}
+        {/* Metric Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <MetricCard
+            label="Transaction Amount"
+            value={formatToINR(TRANSACTION_DATA.amount)}
+            subLabel="Primary Value"
+            icon={IndianRupee}
+            variant="dark"
+          />
+          <MetricCard
+            label="Status"
+            value={TRANSACTION_DATA.status?.toUpperCase()}
+            subLabel="Current State"
+            icon={Activity}
+            variant={getStatusVariant(TRANSACTION_DATA.status)}
+          />
+          <MetricCard
+            label="Commission"
+            value={formatToINR(TRANSACTION_DATA.commission)}
+            subLabel="Earned Amount"
+            icon={Zap}
+            variant="emerald"
+          />
+          <MetricCard
+            label="Entry Type"
+            value={TRANSACTION_DATA.entryType}
+            subLabel="Transaction Category"
+            icon={Tag}
+            variant="blue"
           />
         </div>
 
-        {/* Section 4: Live Diagnostic Stream (Compact Vertical Stack) */}
-        <motion.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.5 }} className="space-y-4">
-          {/* Request Terminal */}
-          <div className="bg-slate-50 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 group">
-            <div className="px-7 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1.5 pr-2">
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-600 ml-2 flex items-center gap-2">
-                  <Globe size={12} className="animate-pulse" /> Diagnostic Request
-                </span>
+        {/* Main Content */}
+        <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+          {/* Header */}
+          <div className="px-6 py-5 border-b border-slate-100 bg-slate-50/30">
+            <div className="flex items-center gap-3">
+              <div className="h-8 w-8 bg-[#2f35cd] rounded-lg flex items-center justify-center text-white shadow-sm">
+                <FileText className="w-4 h-4" />
               </div>
-              <div className="flex items-center gap-4">
-                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(TXN_DATA.apiRequest.plainText)} className="px-4 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-indigo-100 flex items-center gap-2">
-                  <Copy size={11} /> Copy Payload
-                </motion.button>
+              <div>
+                <h3 className="text-[12px] font-black text-slate-900 uppercase tracking-widest">Transaction Details</h3>
+                <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase tracking-widest text-left">Comprehensive Transaction Information</p>
               </div>
-            </div>
-            <div className="p-7 relative">
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03] pointer-events-none group-hover:scale-110 transition-transform duration-700"><Terminal size={80} className="text-indigo-600" /></div>
-              <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-indigo-100 max-h-48">
-                <code className="block py-2">{TXN_DATA.apiRequest.plainText}</code>
-              </pre>
             </div>
           </div>
 
-          {/* Response Terminal */}
-          <div className="bg-slate-50 rounded-[2.5rem] overflow-hidden shadow-sm border border-slate-100 relative group">
-            <div className="px-7 py-4 border-b border-slate-200 flex items-center justify-between bg-white">
-              <div className="flex items-center gap-3">
-                <div className="flex gap-1.5 pr-2">
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                  <div className="h-2 w-2 rounded-full bg-slate-200" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-rose-600 ml-2 flex items-center gap-2">
-                  <Activity size={12} /> Server Response
-                </span>
-              </div>
-              <div className="flex items-center gap-4">
-                <motion.button whileTap={{ scale: 0.95 }} onClick={() => handleCopy(JSON.stringify(TXN_DATA.apiResponse, null, 2))} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 text-[9px] font-black uppercase tracking-widest rounded-xl transition-all border border-rose-100 flex items-center gap-2">
-                  <Copy size={11} /> Copy JSON
-                </motion.button>
-              </div>
-            </div>
+          {/* Content Grid */}
+          <div className="p-4 sm:p-6 md:p-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-            <div className="p-7">
-              <pre className="text-[12px] font-mono text-slate-600 overflow-auto custom-scrollbar leading-relaxed selection:bg-rose-100 max-h-48">
-                <code className="block py-2">{JSON.stringify(TXN_DATA.apiResponse, null, 2)}</code>
-              </pre>
+              {/* Basic Information */}
+              <DetailItem label="Date & Time" value={formatDate(TRANSACTION_DATA.createdAt)} icon={Calendar} color="indigo" />
+              <DetailItem label="Reference ID" value={TRANSACTION_DATA.referenceId} icon={Hash} color="indigo" />
+              <DetailItem label="Service Type" value={TRANSACTION_DATA.serviceType} icon={Tag} color="indigo" />
+              <DetailItem label="Service Category" value={TRANSACTION_DATA.serviceCategory} icon={Tag} color="indigo" />
+              <DetailItem label="Entry Type" value={TRANSACTION_DATA.entryType} icon={Activity} color="indigo" />
+
+              {/* User Information */}
+              <DetailItem label="Customer Name" value={TRANSACTION_DATA.fullName} icon={User} color="indigo" />
+              <DetailItem label="Username" value={TRANSACTION_DATA.userName} icon={Hash} color="indigo" />
+              <DetailItem label="Email" value={TRANSACTION_DATA.email} icon={Mail} color="indigo" />
+              <DetailItem label="Phone" value={TRANSACTION_DATA.phone} icon={Phone} color="indigo" />
+
+              {/* Financial Information */}
+              <DetailItem label="Opening Balance" value={formatToINR(TRANSACTION_DATA.openingBalance)} icon={IndianRupee} color="slate" />
+              <DetailItem label="Transaction Amount" value={formatToINR(TRANSACTION_DATA.amount)} icon={IndianRupee} color="indigo" />
+              <DetailItem label="Commission" value={formatToINR(TRANSACTION_DATA.commission)} icon={TrendingUp} color="emerald" />
+              <DetailItem label="Charges" value={formatToINR(TRANSACTION_DATA.charge)} icon={TrendingDown} color="rose" />
+              <DetailItem label="GST Amount" value={formatToINR(TRANSACTION_DATA.gstAmount)} icon={ShieldCheck} color="amber" />
+              <DetailItem label="TDS Amount" value={formatToINR(TRANSACTION_DATA.tdsAmount)} icon={ShieldCheck} color="amber" />
+              <DetailItem label="Closing Balance" value={formatToINR(TRANSACTION_DATA.closingBalance)} icon={IndianRupee} color="slate" />
+
+              {/* Transaction Type & Status */}
+              <div className="flex items-center gap-2 sm:gap-3 p-2.5 sm:p-3 rounded-xl transition-all hover:bg-white hover:shadow-sm group border border-slate-100/80 hover:border-slate-200">
+                <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg flex items-center justify-center border shrink-0 transition-all group-hover:scale-105 text-slate-600 bg-slate-100 border-slate-200">
+                  {TRANSACTION_DATA.type === 'credit' ? <TrendingUp className="w-3 h-3 sm:w-3.5 sm:h-3.5" /> : <TrendingDown className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                </div>
+                <div className="flex flex-col min-w-0 text-left flex-1">
+                  <span className="text-[8px] sm:text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Transaction Type</span>
+                  <span className={cn("text-[10px] sm:text-[12px] font-bold tracking-tight truncate flex-1 capitalize", getTypeColor(TRANSACTION_DATA.type))}>
+                    {TRANSACTION_DATA.type}
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <div className="md:col-span-2 lg:col-span-3">
+                <DetailItem label="Description" value={TRANSACTION_DATA.description} icon={FileText} color="indigo" />
+              </div>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Security Footer */}
         <div className="flex items-center justify-center py-8 border-t border-slate-100 gap-4 opacity-30 mt-4">
           <ShieldCheck size={24} className="text-slate-400" />
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Audit Vault Protected Entry</p>
+          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.4em]">Secure Transaction Audit</p>
         </div>
 
       </div>
-
-      <style dangerouslySetInnerHTML={{
-        __html: `
-        .custom-scrollbar::-webkit-scrollbar {
-          height: 4px;
-          width: 4px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background: transparent;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(0,0,0,0.05);
-          border-radius: 10px;
-        }
-        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
-          background: rgba(0,0,0,0.1);
-        }
-      `}} />
     </PageLayout>
   );
 }

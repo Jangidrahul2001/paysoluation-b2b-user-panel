@@ -25,8 +25,15 @@ export const BillReceipt = ({ bill, customerMobile, setCustomerMobile, isPaying,
       if (bill && bill.data && bill.data.additionalInfo && bill.data.additionalInfo.info) {
          const additionalInfo = bill.data.additionalInfo.info
          if (Array.isArray(additionalInfo) && additionalInfo?.length > 1) {
-            const isMinTrue = additionalInfo.find((item) => item.infoName?.includes("Minimum Amount for Top-up"))
-            const isMaxTrue = additionalInfo.find((item) => item.infoName?.includes("Maximum Permissible Recharge Amount"))
+            const isMinTrue = additionalInfo.find(item =>
+               item.infoName?.toLowerCase().includes("minimum")
+            );
+
+            const isMaxTrue = additionalInfo.find(item =>
+               item.infoName?.toLowerCase().includes("maximum")
+            );
+            // const isMinTrue = additionalInfo.find((item) => item.infoName?.includes("Minimum Amount for Top-up"))
+            // const isMaxTrue = additionalInfo.find((item) => item.infoName?.includes("Maximum Permissible Recharge Amount"))
             if (isMinTrue && isMaxTrue) {
                setAmountRange({
                   minimum: isMinTrue.infoValue,
@@ -42,16 +49,15 @@ export const BillReceipt = ({ bill, customerMobile, setCustomerMobile, isPaying,
 
    const handlePay = () => {
       if (isUpdateAmount && amountRange.minimum && amountRange.maximum) {
+
          if (Number(bill.amount) < Number(amountRange.minimum) || Number(bill.amount) > Number(amountRange.maximum)) {
             toast.error(`Please enter amount between ${amountRange.minimum} and ${amountRange.maximum}`)
             return
          }
+         if (onPay) onPay()
       }
       else {
-         if (onPay) {
-            console.log("all successFulll")
-            onPay()
-         }
+         if (onPay) onPay()
 
       }
    }

@@ -44,7 +44,7 @@ import { Input } from "../components/ui/Input";
 
 export default function WalletTransfer() {
   const dispatch = useDispatch();
-  const { data: wallet, loading: walletLoading } = useSelector((state) => state.wallet);
+  const { data: wallet, loading: walletLoading, error: walletError } = useSelector((state) => state.wallet);
   const [formData, setFormData] = useState({ amount: "" });
   const [transactions, setTransactions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -127,7 +127,11 @@ export default function WalletTransfer() {
       toast.error("Please enter a valid amount");
       return;
     }
-    if (parseFloat(formData?.amount) > parseFloat(wallet?.aepsWallet - wallet?.aepsHoldAmount)) {
+    else if (!wallet || walletLoading) {
+      toast.error("Wallet balance unavailable. Please try again.");
+      return;
+    }
+    else if (parseFloat(formData?.amount) > parseFloat(wallet?.aepsWallet - wallet?.aepsHoldAmount)) {
       toast.error("Amount must be less than wallet balance");
       return;
     }
@@ -150,10 +154,10 @@ export default function WalletTransfer() {
       accessorKey: "createdAt",
       center: true,
       cell: ({ row }) => (
-          <span className="text-[11px] whitespace-nowrap text-slate-700 uppercase tracking-tight">
-            {formatDate(row.original.createdAt)}
-          </span>
-   
+        <span className="text-[11px] whitespace-nowrap text-slate-700 uppercase tracking-tight">
+          {formatDate(row.original.createdAt)}
+        </span>
+
       )
     },
     {

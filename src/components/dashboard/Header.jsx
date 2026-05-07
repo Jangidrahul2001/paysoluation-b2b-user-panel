@@ -58,7 +58,7 @@ const HeaderActionButton = ({
       disabled={disabled}
       className={cn(baseStyles, variants[variant], className)}
     >
-      {Icon && <Icon className={cn("h-4.5 w-4.5", spin && "animate-spin")} />}
+      {Icon && <Icon className={cn("h-4.5 w-4.5 md:h-4.5 md:w-4.5", spin && "animate-spin")} />}
       {children}
     </button>
   );
@@ -156,7 +156,7 @@ export default function Header({ onMenuClick }) {
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "1.6rem", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            className="bg-gradient-to-tr from-white to-indigo-50/30 flex items-center px-6 overflow-hidden relative group"
+            className="bg-gradient-to-tr from-white to-indigo-50/30 flex items-center px-2 overflow-hidden relative group"
           >
             <div className="flex items-center text-[9px] font-black text-blue-500 uppercase tracking-[0.2em] gap-2">
               <span className="h-1 w-1 rounded-full bg-blue-500 animate-pulse" />
@@ -167,7 +167,7 @@ export default function Header({ onMenuClick }) {
                 initial={{ x: "100%" }}
                 animate={{ x: "-100%" }}
                 transition={{ duration: 45, repeat: Infinity, ease: "linear" }}
-                className="absolute whitespace-nowrap text-[10px] font-semibold text-slate-500 flex items-center gap-12"
+                className="absolute whitespace-nowrap text-[12px] font-semibold text-slate-500 flex items-center gap-12"
               >
                 {[...newsTicker, ...newsTicker, ...newsTicker].map((text, i) => (
                   <span key={i} className="flex items-center gap-3">
@@ -186,7 +186,7 @@ export default function Header({ onMenuClick }) {
         )}
       </AnimatePresence>
 
-      <header className="flex h-13 md:h-15 lg:h-16 items-center justify-between gap-2 md:gap-4 px-3 md:px-6 lg:px-8">
+      <header className="py-4 md:py-2 flex h-13 md:h-15 lg:h-16 items-center justify-between gap-2 md:gap-4 px-3 md:px-6 lg:px-8 shadow-inner shadow-indigo-200/50">
 
         {/* Left Section: Branding/Ticker/Status */}
         <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0 pr-2 md:pr-4">
@@ -195,7 +195,7 @@ export default function Header({ onMenuClick }) {
             <HeaderActionButton
               icon={PanelLeftOpen}
               onClick={onMenuClick}
-              className="!h-9 !w-9 bg-indigo-600 text-white rounded-full shadow-md border-white/5 active:scale-90 xs:hidden"
+              className="!h-10 !w-10 md:!h-9 md:!w-9  bg-indigo-600 text-white rounded-full shadow-md border-white/5 active:scale-90 xs:hidden"
             />
           )}
 
@@ -241,13 +241,13 @@ export default function Header({ onMenuClick }) {
             <m.div
               className="flex items-center gap-1 md:gap-2.5 px-1.5 md:px-4 py-1 rounded-l-full bg-white/50 hover:bg-white transition-all cursor-pointer flex-shrink group min-w-0"
             >
-              <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
-                <Fingerprint size={12} className="md:size-4 text-amber-600 group-hover:text-white transition-colors" />
+              <div className="h-8 w-8 md:h-8 md:w-8 rounded-full bg-amber-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-amber-500 group-hover:text-white transition-all duration-300">
+                <Fingerprint size={16} className="md:size-4 text-amber-600 group-hover:text-white transition-colors" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[6px] md:text-[8px] font-black text-amber-600 uppercase tracking-tighter md:tracking-widest leading-none mb-0.5">AePS</span>
+                <span className="text-[8px] md:text-[8px] font-black text-amber-600 uppercase tracking-tighter md:tracking-widest leading-none mb-0.5">AePS</span>
                 <span className={cn(
-                  "text-[10px] md:text-[12px] lg:text-[13px] font-bold text-slate-900 leading-none tabular-nums truncate max-w-[45px] sm:max-w-none transition-opacity duration-300",
+                  "text-[12px] md:text-[12px] lg:text-[13px] font-bold text-slate-900 leading-none tabular-nums truncate max-w-[50px] sm:max-w-none transition-opacity duration-300",
                   walletLoading && "opacity-50"
                 )}>
                   ₹{(!wallet && walletLoading) ? "..." : (wallet?.aepsWallet || "0")}
@@ -261,13 +261,13 @@ export default function Header({ onMenuClick }) {
             <m.div
               className="flex items-center gap-1 md:gap-2.5 px-1.5 md:px-4 py-1 rounded-r-full bg-white/50 hover:bg-white transition-all cursor-pointer flex-shrink group min-w-0"
             >
-              <div className="h-6 w-6 md:h-8 md:w-8 rounded-full bg-indigo-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
-                <Wallet size={12} className="md:size-4 text-indigo-600 group-hover:text-white transition-colors" />
+              <div className="h-8 w-8 md:h-8 md:w-8 rounded-full bg-indigo-500/10 flex items-center justify-center flex-shrink-0 group-hover:bg-indigo-500 group-hover:text-white transition-all duration-300">
+                <Wallet size={16} className="md:size-4 text-indigo-600 group-hover:text-white transition-colors" />
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[6px] md:text-[8px] font-black text-indigo-600 uppercase tracking-tighter md:tracking-widest leading-none mb-0.5">MAIN</span>
+                <span className="text-[8px] md:text-[8px] font-black text-indigo-600 uppercase tracking-tighter md:tracking-widest leading-none mb-0.5">MAIN</span>
                 <span className={cn(
-                  "text-[10px] md:text-[12px] lg:text-[13px] font-bold text-slate-900 leading-none tabular-nums truncate max-w-[45px] sm:max-w-none transition-opacity duration-300",
+                  "text-[12px] md:text-[12px] lg:text-[13px] font-bold text-slate-900 leading-none tabular-nums truncate max-w-[50px] sm:max-w-none transition-opacity duration-300",
                   walletLoading && "opacity-50"
                 )}>
                   ₹{(!wallet && walletLoading) ? "..." : (wallet?.mainWallet || "0")}
@@ -283,7 +283,7 @@ export default function Header({ onMenuClick }) {
               onClick={handleRefresh}
               spin={isRefreshing}
               variant="ghost"
-              className="!h-7.5 !w-7.5 md:!h-8.5 lg:!h-9 md:!w-8.5 lg:!w-9 !rounded-full !bg-slate-50/50 !bg-white/80 hover:!bg-white border-slate-100/50 shadow-sm hover:shadow-sm"
+              className="!h-9 !w-9 md:!h-8.5 lg:!h-9 md:!w-8.5 lg:!w-9 !rounded-full !bg-slate-50/50 !bg-white/80 hover:!bg-white border-slate-100/50 shadow-sm hover:shadow-sm"
             />
 
             <div className="relative" ref={notifRef}>
@@ -291,10 +291,12 @@ export default function Header({ onMenuClick }) {
                 icon={Bell}
                 variant="ghost"
                 onClick={() => { setIsNotifOpen(!isNotifOpen); setIsOpen(false) }}
-                className="!h-7.5 !w-7.5 md:!h-8.5 lg:!h-9 md:!w-8.5 lg:!w-9 !rounded-full !bg-slate-50/50 !bg-white/80 hover:!bg-white border-slate-100/50 shadow-sm hover:shadow-sm"
+                className="!h-9 !w-9 md:!h-8.5 lg:!h-9 md:!w-8.5 lg:!w-9 !rounded-full !bg-slate-50/50 !bg-white/80 hover:!bg-white border-slate-100/50 shadow-sm hover:shadow-sm"
               >
                 {hasUnreadNotifications && (
-                  <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-indigo-600 ring-2 ring-white" />
+                  <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-indigo-600 ring-2 ring-white flex items-center justify-center text-[8px] font-bold text-white">
+                    {unreadCount}
+                  </span>
                 )}
               </HeaderActionButton>
               <AnimatePresence>
@@ -307,7 +309,7 @@ export default function Header({ onMenuClick }) {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsOpen(!isOpen)}
-                className="h-8 w-8 md:h-9 lg:h-10 md:w-9 lg:w-10 rounded-full border border-slate-200/60 shadow-sm overflow-hidden hover:scale-105 active:scale-95 transition-all bg-transparent flex items-center justify-center p-0"
+                className="h-10 w-10 md:h-9 lg:h-10 md:w-9 lg:w-10 rounded-full border border-slate-200/60 shadow-sm overflow-hidden hover:scale-105 active:scale-95 transition-all bg-transparent flex items-center justify-center p-0"
               >
                 <img
                   src={`https://ui-avatars.com/api/?name=${profile?.firstName}+${profile?.lastName}&background=0f172a&color=fff&bold=true`}

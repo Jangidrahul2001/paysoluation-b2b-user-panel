@@ -29,7 +29,7 @@ import {
 import { m, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/Button";
-import { handleValidationError } from "../../utils/helperFunction";
+import { capitalize, handleValidationError } from "../../utils/helperFunction";
 import { toast } from "sonner";
 import { useFetch } from "../../hooks/useFetch";
 import { apiEndpoints } from "../../api/apiEndpoints";
@@ -110,15 +110,15 @@ const sidebarGroups = [
         icon: BarChart,
         children: [
           { title: "Recharge", href: "/transaction-report/recharge", icon: Smartphone, key: "recharge" },
-          { title: "Dmt", href: "/transaction-report/dmt", icon: Send, key: "dmt" },
-          { title: "Bbps", href: "/transaction-report/bbps", icon: FileText, key: "bbps" },
+          { title: "DMT", href: "/transaction-report/dmt", icon: Send, key: "dmt" },
+          { title: "BBPS", href: "/transaction-report/bbps", icon: FileText, key: "bbps" },
           {
             title: "AePS", href: "/transaction-report/aeps", icon: Fingerprint, key: "aeps",
             children: [
-              { title: "Aeps1", href: "/transaction-report/aeps1", icon: Fingerprint, key: "aeps1" },
-              { title: "Aeps2", href: "/transaction-report/aeps2", icon: Fingerprint, key: "aeps2" }]
+              { title: "AePS 1", href: "/transaction-report/aeps1", icon: Fingerprint, key: "aeps1" },
+              { title: "AePS 2", href: "/transaction-report/aeps2", icon: Fingerprint, key: "aeps2" }]
           },
-          { title: "AePS Payout", href: "/transaction-report/aeps-payout", icon: CreditCard, key: "aeps" },
+          { title: "AePS Payout", href: "/transaction-report/aeps-payout", icon: CreditCard, key: "aeps-payout" },
           { title: "Xpress Payout", href: "/transaction-report/xpress-payout", icon: Banknote, key: "xpress-payout" },
         ],
       },
@@ -465,7 +465,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
               </Button>
             ) : (
               <>
-                <div to="/" className="flex items-center gap-4 overflow-hidden relative z-20">
+                <div to="/" className="flex items-center gap-2 overflow-hidden relative z-20">
                   <m.div
                     layout
                     className="h-8 w-8 md:h-9 lg:h-10 md:w-9 lg:w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white p-2 shrink-0"
@@ -473,8 +473,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
                     <span className="font-bold text-sm md:text-md">{`${profile?.roleName?.split(" ")[0]?.charAt(0) || ''}${profile?.roleName?.split(" ")?.[1]?.charAt(0) || ''}`}</span>
                   </m.div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-[1.35rem] text-slate-900 tracking-tight leading-none">
-                      User
+                    <span className="font-bold text-[16px] text-slate-900 tracking-tight leading-none">
+                      {`${capitalize(profile?.firstName)}` || "User"}
                     </span>
                     <span className="text-[11px] text-slate-400 font-medium tracking-wide">
                       {profile?.roleName || "Verified Merchant"}

@@ -41,6 +41,7 @@ import { BentoCard } from "../components/ui/BentoCard";
 import StatusBadge from "../components/ui/StatusBadge";
 import { cn } from "../lib/utils";
 import { ActionButtons } from "../components/ui/ActionButton";
+import { Input } from "../components/ui/Input";
 
 const StatCard = ({ label, value, color, bg, icon: Icon }) => (
   <motion.div
@@ -249,16 +250,16 @@ export default function SupportTicket() {
       header: "VIEW",
       id: "actions",
       center: true,
-      cell: ({ row }) => 
-        (
-          <ActionButtons
-            onView={() => handleOpenModal(row.original)}
-            viewTitle='View Details'
-          />
+      cell: ({ row }) =>
+      (
+        <ActionButtons
+          onView={() => handleOpenModal(row.original)}
+          viewTitle='View Details'
+        />
 
-        )
+      )
 
-      
+
     },
   ];
 
@@ -325,8 +326,8 @@ export default function SupportTicket() {
 
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Problem Area</label>
                     <Select
+                      label="Service"
                       error={errors.serviceId}
                       options={serviceList}
                       placeholder="Select Service"
@@ -339,19 +340,17 @@ export default function SupportTicket() {
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Reference ID (Skip if N/A)</label>
-                    <div className="relative group">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-[#7065e0] transition-colors">
-                        <Hash size={14} />
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="TXN12345678"
-                        className="w-full h-11 bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-2xl focus:ring-4 focus:ring-indigo-500/5 focus:bg-white focus:border-[#7065e0]/40 block pl-10 pr-4 transition-all outline-none"
-                        value={formData.transactionId}
-                        onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
-                      />
-                    </div>
+
+                    <Input
+                      icon={Hash}
+                      label="Reference ID"
+                      type="text"
+                      placeholder="TXN12345678"
+                      className="w-full h-11 bg-slate-50 border border-slate-200 text-slate-800 text-sm font-bold rounded-2xl focus:ring-4 focus:ring-indigo-500/5 focus:bg-white focus:border-[#7065e0]/40 block pl-10 pr-4 transition-all outline-none"
+                      value={formData.transactionId}
+                      onChange={(e) => setFormData({ ...formData, transactionId: e.target.value })}
+                    />
+
                   </div>
 
                   <div className="space-y-2">

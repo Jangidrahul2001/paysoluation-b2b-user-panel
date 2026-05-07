@@ -26,7 +26,8 @@ import { apiEndpoints } from "../api/apiEndpoints";
 import { useFetch } from "../hooks/useFetch";
 import { usePost } from "../hooks/usePost";
 import { toast } from "sonner";
-import { checkAssignedService, formatDecimalNumberInput, formatNameInputWithSpace, formatNumberInput, handleValidationError, rejectRequest } from "../utils/helperFunction";
+import ReceiptModal from "../modal/RecieptModal"
+import { checkAssignedService, formatDecimalNumberInput, formatNameInputWithSpace, formatNumberInput, formatToINR, handleValidationError, rejectRequest } from "../utils/helperFunction";
 
 // New Components
 import { CategoryFilter } from "../components/bill-payment/CategoryFilter";
@@ -183,6 +184,7 @@ export default function BillPayment() {
       if (data?.success) {
         console.log(data, "payment response")
         toast.success("Bill Payment Successful!");
+
         const selectedCategoryName = selectedService?.name;
         setRecieptModalData({
           title: "Transaction Successful",
@@ -193,7 +195,7 @@ export default function BillPayment() {
             "Bill No.": data?.data?.billNumber || "",
             "Customer Mobile": customerMobile || "",
             "Service": selectedCategoryName || "",
-            "Transaction Id": res?.data?.txnid || "",
+            "Transaction Id": data?.data?.txnid || "",
             status: "Transaction Successful"
           },
           isOpen: true
@@ -205,6 +207,7 @@ export default function BillPayment() {
     onError: (err) => {
       setSelectedBiller(null)
       setCustomerMobile("")
+      setCustomerName("")
       setBill(null)
       setIsBillValidated(false)
       setShowBillReceipt(false)
@@ -281,7 +284,7 @@ export default function BillPayment() {
     const billAmount = Number(bill?.amount ?? 0) * 100;
     payBill({
       ...bill,
-        ...(bill?.data?.billerResponse || {}),
+      ...(bill?.data?.billerResponse || {}),
       billAmount: billAmount,
       customerName: customerName,
       billerId: selectedBiller?.billerId,

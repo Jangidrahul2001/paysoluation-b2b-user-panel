@@ -164,6 +164,7 @@ export function DownLineUserSelect({
               Select All Users
             </span>
           ) : (
+            
             <span className={cn(
               "truncate font-medium",
               isDark ? "text-slate-400/80" : "text-slate-400"
@@ -172,7 +173,7 @@ export function DownLineUserSelect({
             </span>
           )}
         </div>
-        <ArrowLeft
+        <ChevronDown        
           size={16}
           className={cn(
             "transition-all duration-300 shrink-0",

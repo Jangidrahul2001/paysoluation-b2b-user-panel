@@ -392,7 +392,7 @@ export default function TransactionDetailPage() {
         subTitleValue: formatToINR(data?.amount),
         receiptData: {
           "Category": data?.category || "",
-          "bill Number": data?.billNumber || "",
+          "Bill Number": data?.billNumber || "",
           "Customer Name": data?.customerName || "",
           "Customer Mobile": data?.customerMobile || "",
           "Transaction Id": data?.referenceId || "",

@@ -496,7 +496,9 @@ export default function Dashboard() {
         if (data && data.data && data.success) {
           const temp = data.data.map((item) => ({ ...item, label: item.label, value: item.name }))
           setServiceOptions(temp)
-          setSelectedService(temp[0].name)
+          if (temp.length > 0) {
+            setSelectedService(temp[0].name)
+          }
 
           console.log(data)
         }
@@ -514,6 +516,9 @@ export default function Dashboard() {
     {
       onSuccess: (data) => {
         if (data && data.data && data.success) {
+          if (data.data.length === 0) {
+            return;
+          }
           const range = data.data.map((item) => {
             return item.amount
           })
@@ -663,7 +668,7 @@ export default function Dashboard() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           onClick={() => setIsCalendarOpen(false)}
-                          className="absolute inset-0 bg-indigo-600/40 backdrop-blur-sm"
+                          className="absolute inset-0 bg-slate-600/40 backdrop-blur-sm"
                         />
                         <motion.div
                           initial={{ y: "100%" }}
@@ -705,10 +710,9 @@ export default function Dashboard() {
               <div className="relative flex-1 w-full z-10 mt-2">
                 {/* Y-Axis Labels */}
                 <div className="absolute inset-y-0 left-0 flex flex-col justify-between py-1 text-[10px] font-bold text-slate-300 pointer-events-none pb-5">
-                  {serviceReportsYearly?.range?.map((step) => (
-                    <span>{step}</span>
-                  ))}
-                </div>
+                  {serviceReportsYearly?.range?.map((step, index) => (
+                    <span key={index}>{step}</span>
+                  ))}                </div>
 
                 <div className="ml-10 h-full relative">
 
@@ -722,7 +726,7 @@ export default function Dashboard() {
                         </div>
 
                         <div className="w-full relative flex flex-col gap-0" style={{
-                          height: `${Math.min(bar?.amount * 1.45, 160)}px`
+                          height: `${Math.min((bar?.amount ?? 0) * 1.45, 160)}px`
                         }}>
                           <div className={cn(
                             "h-1/2 w-full rounded-[1rem] relative z-10 shadow-sm bg-emerald-500 transition-all duration-500 ",

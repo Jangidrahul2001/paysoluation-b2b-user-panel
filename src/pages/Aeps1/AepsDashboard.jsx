@@ -138,7 +138,6 @@ export default function AepsDashboard() {
       onSuccess: (res) => {
 
         if (res?.success) {
-          console.log(activeService, res, "pppppcheckkk")
           if (activeService === 'balance') {
             setRecieptModalData({
               title: "Balance Enquiry",
