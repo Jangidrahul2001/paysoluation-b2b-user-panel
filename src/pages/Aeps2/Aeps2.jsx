@@ -72,7 +72,7 @@ export default function Aeps2() {
       }
 
     }
-  }, [])
+  }, [profile,navigate])
 
   useEffect(() => {
     if (navigator.geolocation) {

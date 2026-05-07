@@ -346,6 +346,9 @@ export default function AEPSPayout() {
     else if (parseFloat(formData?.amount) > 10000) {
       tempErrors.amount = "Amount must be less than 10000";
     }
+    else if (!wallet || walletLoading) {
+      tempErrors.amount = "Wallet balance unavailable. Please try again.";
+    }
     else if (parseFloat(formData?.amount) > parseFloat(wallet?.aepsWallet - wallet?.aepsHoldAmount)) {
       tempErrors.amount = "Amount must be less than wallet balance";
     }

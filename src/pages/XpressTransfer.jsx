@@ -309,6 +309,9 @@ export default function XpressTransfer() {
     else if (parseFloat(formData?.amount) > 10000) {
       tempErrors.amount = "Amount must be less than 10000";
     }
+      else  if (!wallet || walletLoading) {
+     tempErrors.amount = "Wallet balance unavailable. Please try again.";
+   }
      else if (parseFloat(formData?.amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
                 tempErrors.amount ="Amount must be less than wallet balance";
                
@@ -380,7 +383,7 @@ export default function XpressTransfer() {
     setIsModalOpen(true);
   };
   // Replace the single isLoading check with:
-  const isLoading = isLoadingAccounts || isLoadingTransactions;
+  const isLoading = isLoadingAccounts || isLoadingTransactions || walletLoading;
 
   // Loading Skeleton Component
   const LoadingSkeleton = () => (

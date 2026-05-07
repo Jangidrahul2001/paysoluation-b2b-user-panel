@@ -110,15 +110,15 @@ const sidebarGroups = [
         icon: BarChart,
         children: [
           { title: "Recharge", href: "/transaction-report/recharge", icon: Smartphone, key: "recharge" },
-          { title: "Dmt", href: "/transaction-report/dmt", icon: Send, key: "dmt" },
-          { title: "Bbps", href: "/transaction-report/bbps", icon: FileText, key: "bbps" },
+          { title: "DMT", href: "/transaction-report/dmt", icon: Send, key: "dmt" },
+          { title: "BBPS", href: "/transaction-report/bbps", icon: FileText, key: "bbps" },
           {
             title: "AePS", href: "/transaction-report/aeps", icon: Fingerprint, key: "aeps",
             children: [
-              { title: "Aeps1", href: "/transaction-report/aeps1", icon: Fingerprint, key: "aeps1" },
-              { title: "Aeps2", href: "/transaction-report/aeps2", icon: Fingerprint, key: "aeps2" }]
+              { title: "AePS 1", href: "/transaction-report/aeps1", icon: Fingerprint, key: "aeps1" },
+              { title: "AePS 2", href: "/transaction-report/aeps2", icon: Fingerprint, key: "aeps2" }]
           },
-          { title: "AePS Payout", href: "/transaction-report/aeps-payout", icon: CreditCard, key: "aeps" },
+          { title: "AePS Payout", href: "/transaction-report/aeps-payout", icon: CreditCard, key: "aeps-payout" },
           { title: "Xpress Payout", href: "/transaction-report/xpress-payout", icon: Banknote, key: "xpress-payout" },
         ],
       },

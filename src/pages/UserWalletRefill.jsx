@@ -62,7 +62,7 @@ export default function UserWalletRefill() {
   const [totalRecords, setTotalRecords] = useState(0);
   const [selectedUser, setSelectedUser] = useState(null);
   const [errors, setErrors] = useState({});
-  const { data: wallet, loading: walletLoading } = useSelector((state) => state.wallet);
+  const { data: wallet, loading: walletLoading, error: walletError } = useSelector((state) => state.wallet);
 
   // Pagination states
   const [pageIndex, setPageIndex] = useState(1);
@@ -177,10 +177,13 @@ export default function UserWalletRefill() {
     if (!formData.amount || isNaN(formData.amount) || Number(formData.amount) <= 0) {
       newErrors.amount = "Please enter a valid amount";
     }
+    else if (!wallet || walletLoading) {
+      newErrors.amount = "Wallet balance unavailable. Please try again.";
+    }
 
-    if (parseFloat(formData?.amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
+    else if (parseFloat(formData?.amount) > parseFloat(wallet?.mainWallet - wallet?.mainHoldAmount)) {
       newErrors.amount = "Amount must be less than wallet balance";
-    
+
     }
 
     setErrors(newErrors);
@@ -254,10 +257,10 @@ export default function UserWalletRefill() {
       accessorKey: "createdAt",
       center: true,
       cell: ({ row }) => (
-          <span className="text-[11px]  text-slate-700 uppercase whitespace-nowrap tracking-tight">
-            {formatDate(row.original.createdAt)}
-          </span>
-       
+        <span className="text-[11px]  text-slate-700 uppercase whitespace-nowrap tracking-tight">
+          {formatDate(row.original.createdAt)}
+        </span>
+
       )
     },
     {
@@ -281,7 +284,7 @@ export default function UserWalletRefill() {
       accessorKey: "referenceId",
       center: true,
       cell: ({ row }) => (
-         <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+        <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
           <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
             {row.original.referenceId}
           </span>
@@ -446,7 +449,7 @@ export default function UserWalletRefill() {
 
                   <Select
                     label={"Registered User"}
-                    placeholder="Select  User"
+                    placeholder="Select User"
                     options={userOptions}
                     value={formData.userId}
                     onChange={(val) => { setFormData({ ...formData, userId: val }); setErrors(prev => ({ ...prev, userId: "" })) }}
