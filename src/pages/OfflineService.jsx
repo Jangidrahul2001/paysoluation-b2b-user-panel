@@ -40,7 +40,6 @@ import { TableActions } from "../components/ui/TableExportActions";
 import { useNavigate } from "react-router-dom";
 import { cn } from "../lib/utils";
 import StatusBadge from "../components/ui/StatusBadge";
-import { Select } from "../components/ui/Select";
 import { useSelector } from "react-redux";
 import NoPermission from "./NoPermission";
 import RejectedRequest from "./RejectedRequest";
@@ -140,7 +139,7 @@ const ServiceCard = ({ service, onSelect }) => {
         </div>
 
         <Button
-          className="bg-slate-950 hover:bg-indigo-600 text-white gap-2 px-5 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-950/10 hover:shadow-indigo-600/20 transition-all active:scale-95"
+          className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2 px-5 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-indigo-600/10 hover:shadow-indigo-700/20 transition-all active:scale-95"
         >
           Proceed <ArrowRight size={12} strokeWidth={3} />
         </Button>
@@ -209,7 +208,7 @@ export default function OfflineService() {
   const handlePageChange = ({ pageIndex: newPage, pageSize: newSize }) => {
     setPageIndex(newPage);
     setPageSize(newSize);
-   
+
   };
 
   const stats = useMemo(() => {
@@ -294,14 +293,14 @@ export default function OfflineService() {
       center: true,
       cell: ({ row }) => (
         <ActionButtons
-        onView={() =>
-              navigate("/offline-service-request", {
-                state: { requestId: row.original._id },
-              })
-            }
-            viewTitle="View Request"
+          onView={() =>
+            navigate("/offline-service-request", {
+              state: { requestId: row.original._id },
+            })
+          }
+          viewTitle="View Request"
         />
-     
+
       ),
     },
   ];
@@ -310,7 +309,7 @@ export default function OfflineService() {
   if (profileLoading) {
     return (
       <PageLayout
-        title="Offline Service "
+        title="Offline Service Hub"
         subtitle="Direct submission gateway for complex administrative protocols"
         className="pb-10"
       >
@@ -352,7 +351,7 @@ export default function OfflineService() {
 
   return (
     <PageLayout
-      title="Offline Service "
+      title="Offline Service Hub"
       subtitle="Direct submission gateway for complex administrative protocols"
       className="pb-10"
     >

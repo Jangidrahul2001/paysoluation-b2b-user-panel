@@ -527,7 +527,7 @@ export default function XpressTransfer() {
                         label: `${acc.accountHolderName} - ${acc.accountNumber?.slice(-4)}`,
                         ...acc,
                       }))}
-                      placeholder="Select account"
+                      placeholder="Select Account"
                       value={formData.bankId}
                       onChange={(value) => {
                         setFormData({ ...formData, bankId: value });

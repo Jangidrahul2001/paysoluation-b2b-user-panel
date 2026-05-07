@@ -68,20 +68,10 @@ export default function AepsDashboard() {
   const [errors, setErrors] = useState({});
 
   useEffect(() => {
-    dispatch(fetchProfile());
     statusForDailyLogin();
   }, [])
 
-  useEffect(() => {
-    if (profile && profile.aeps1) {
-      if (profile && profile.aeps1 && !profile?.aeps1?.isLoginRequired) {
-        // statusForDailyLogin();
-      }
-      if (!profile?.aeps1?.isAepsEnabled || profile?.aeps1?.isLoginRequired) {
-        navigate("/aeps", { replace: true });
-      }
-    }
-  }, [profile?.aeps1])
+  
 
   const { refetch: fetchBanks } = useFetch(
     `${apiEndpoints.aepsBankList}`,
@@ -108,7 +98,7 @@ export default function AepsDashboard() {
       onSuccess: (data) => {
         console.log(data)
       },
-      onError: (error) => {
+      onError: (error) => {       
         if (error?.code === "AEPS_LOGIN_REQUIRED") {
           toast.error("Daily login required for AEPS services. Please login to continue.");
           dispatch(fetchProfile());
@@ -444,7 +434,7 @@ export default function AepsDashboard() {
                 <div className="space-y-2">
                   <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Select Bank</label>
                   <Select
-                    placeholder="--Choose Bank--"
+                    placeholder="Select Bank"
                     searchable={true}
                     options={bankList}
                     value={serviceFormData.bank}

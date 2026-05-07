@@ -525,7 +525,7 @@ export default function AepsActivation() {
               <div className="lg:col-span-1">
                 <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Model Name</label>
                 <Select
-                  placeholder="Select a Model"
+                  placeholder="Select Device"
                   options={[
                     { label: 'Morpho', value: 'morpho' },
                     { label: 'Mantra', value: 'mantra' },
@@ -573,7 +573,7 @@ export default function AepsActivation() {
               <div className="lg:col-span-1">
                 <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Bank Name</label>
                 <Select
-                  placeholder="--Select Bank--"
+                  placeholder="Select Bank"
                   options={bankList}
                   value={formData.bankName}
                   onChange={(val) => { handleInputChange('bankName', val); setErrors({ ...errors, bankName: "" }) }}

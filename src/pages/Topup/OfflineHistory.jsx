@@ -311,7 +311,7 @@ export default function OfflineHistory() {
           ]}
           value={filters.status}
           onChange={(value) => setFilters({ ...filters, status: value })}
-          placeholder="Filter"
+          placeholder="Select Status"
           className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[12px] !font-bold"
         />
       </div>

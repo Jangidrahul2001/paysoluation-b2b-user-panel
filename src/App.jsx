@@ -130,7 +130,7 @@ function AnimatedRoutes() {
           <Route path="/bill-payment" element={<BillPayment />} />
           <Route path="/aeps-payout" element={<AEPSPayout />} />
           <Route path="/xpress-transfer" element={<XpressTransfer />} />
-           <Route path="/upi-payout" element={<UpiPayout />} />
+          <Route path="/upi-payout" element={<UpiPayout />} />
           <Route path="/wallet-transfer" element={<WalletTransfer />} />
           <Route path="/offline-service" element={<OfflineService />} />
           <Route path="/online-service" element={<OnlineService />} />
@@ -146,19 +146,20 @@ function AnimatedRoutes() {
             path="/wallet-ledger/details/:id"
             element={<WalletTransactionDetails />}
           />
-          <Route path="/transaction-report" element={<TransactionReport />} />
+          <Route path="/transaction-report/:service" element={<TransactionReport />} />
           <Route
-            path="/transaction-report-details/:_id"
+            path="/transaction-report/:service/:_id"
             element={<TransactionDetailPage />}
           />
-          <Route
+
+          {/* <Route
             path="/service-report/:service"
             element={<TransactionReport />}
           />
           <Route
-            path="/service-report/details/:id"
+            path="/service-report/details/:_id"
             element={<TransactionDetailPage />}
-          />
+          /> */}
           <Route path="/commission-report" element={<CommissionReport />} />
           <Route path="/all-transactions" element={<AllTransactions />} />
           <Route path="/topup/online" element={<OnlineTopup />} />

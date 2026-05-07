@@ -29,7 +29,7 @@ import { Input } from '../../components/ui/Input';
 import { cn } from '../../lib/utils';
 import { Select } from '../../components/ui/Select';
 import { Button } from '../../components/ui/Button';
-import { checkAssignedService, emailRegex, formatEmailInput,  formatNameInputWithSpace, formatNumberInput, formatPanInput, handleValidationError,  nameWithSpaceRegex, panRegex, phoneRegex, pincodeRegex, rejectRequest } from '../../utils/helperFunction';
+import { checkAssignedService, emailRegex, formatEmailInput, formatNameInputWithSpace, formatNumberInput, formatPanInput, handleValidationError, nameWithSpaceRegex, panRegex, phoneRegex, pincodeRegex, rejectRequest } from '../../utils/helperFunction';
 import { CustomSingleCalendar } from '../../components/dashboard/CustomSingleCalendar';
 import { Skeleton } from '../../components/ui/skeleton';
 import RejectedRequest from '../RejectedRequest';
@@ -62,6 +62,17 @@ export default function Aeps2() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
+  useEffect(() => {
+    if (profile && profile.aeps2 && profile.aeps2.isActivated) {
+      if (profile.aeps2.isLoginRequired) {
+        navigate("/aeps2/aeps-daily-login", { replace: true });
+      }
+      else {
+        navigate("/aeps2/aeps-service", { replace: true });
+      }
+
+    }
+  }, [])
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -380,7 +391,7 @@ export default function Aeps2() {
     );
   }
   if (rejectRequest("aeps2", profile?.requestedService)) return (<RejectedRequest service="aeps" pipeline="aeps2" />)
-  if (!checkAssignedService("aeps", "aeps2", profile?.assignedServices)) return (<NoPermission service="aeps" pipeline="aeps2"  />)
+  if (!checkAssignedService("aeps", "aeps2", profile?.assignedServices)) return (<NoPermission service="aeps" pipeline="aeps2" />)
 
   return (
     <PageLayout
@@ -448,7 +459,7 @@ export default function Aeps2() {
                   <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Email Address</label>
                   <Input
                     icon={Mail}
-              
+
                     placeholder="example@mail.com"
                     value={formData.email}
                     onChange={(e) => {
@@ -640,7 +651,7 @@ export default function Aeps2() {
               <div>
                 <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">City</label>
                 <Select
-                  placeholder="City name"
+                  placeholder="Select City"
                   value={formData.address.city}
                   options={cityList}
                   onChange={(val) => {
@@ -656,7 +667,7 @@ export default function Aeps2() {
                   placeholder="District"
                   value={formData.address.district}
                   onChange={(e) => {
-                    handleInputChange('address.district', formatNameInputWithSpace(e.target.value,50))
+                    handleInputChange('address.district', formatNameInputWithSpace(e.target.value, 50))
                     setErrors({ ...errors, 'address.district': "" })
                   }}
                   error={errors['address.district']}

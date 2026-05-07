@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/Button';
-import { Select } from '../../components/ui/Select';
 import { PageLayout } from '../../components/layout/PageLayout';
 import { Input } from '../../components/ui/Input';
 import { cn } from '../../lib/utils';

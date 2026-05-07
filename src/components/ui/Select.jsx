@@ -130,7 +130,7 @@ export function Select({
 
   return (
     <div className="relative w-full">
-      {label && <label className="text-[11px] font-black text-slate-500 uppercase tracking-widest ml-1">{label}</label>}
+      {label && <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest ml-1">{label}</label>}
       <button
         ref={triggerRef}
         type="button"

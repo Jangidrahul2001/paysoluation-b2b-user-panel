@@ -424,11 +424,11 @@ export default function WalletLedger() {
       },
       {
         header: "CHARGES",
-        accessorKey: "charges",
+        accessorKey: "charge",
         center: true,
         cell: ({ row }) => (
           <span className="text-[13px] text-slate-800">
-            {formatToINR(row.original.charges)}
+            {formatToINR(row.original.charge)}
           </span>
         ),
       },
@@ -438,7 +438,7 @@ export default function WalletLedger() {
         center: true,
         cell: ({ row }) => (
           <span className="text-[13px] text-slate-800">
-            {formatToINR(row.original.gst)}
+            {formatToINR(row.original.gstAmount)}
           </span>
         ),
       },
@@ -448,7 +448,7 @@ export default function WalletLedger() {
         center: true,
         cell: ({ row }) => (
           <span className="text-[13px]  text-slate-800">
-            {formatToINR(row.original.tds)}
+            {formatToINR(row.original.tdsAmount)}
           </span>
         ),
       },
@@ -480,27 +480,27 @@ export default function WalletLedger() {
       // },
       {
         header: "MESSAGE",
-        accessorKey: "message",
+        accessorKey: "description",
         className: "min-w-[150px]",
         cell: ({ row }) => (
-          <ExpandableMessage text={row.original.message} />
+          <ExpandableMessage text={row.original.description} />
         ),
       },
-      // {
-      //   header: "ACTION",
-      //   accessorKey: "action",
-      //   center: true,
-      //   cell: ({ row }) => (
-      //     <ActionButtons
-      //       onView={() =>
-      //         row.original?._id &&
-      //         navigate(`/wallet-ledger/details/${row.original._id}`)
-      //       }
-      //       viewTitle="View Ledger Details"
-      //     />
+      {
+        header: "ACTION",
+        accessorKey: "action",
+        center: true,
+        cell: ({ row }) => (
+          <ActionButtons
+            onView={() =>
+              row.original?._id &&
+              navigate(`/wallet-ledger/details/${row.original._id}`)
+            }
+            viewTitle="View Ledger Details"
+          />
 
-      //   ),
-      // },
+        ),
+      },
     ],
     [pageIndex, pageSize],
   );
@@ -528,7 +528,7 @@ export default function WalletLedger() {
           ]}
           value={filters.status}
           onChange={(value) => setFilters({ ...filters, status: value })}
-          placeholder="Select Filter"
+          placeholder="Select Status"
           className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[13px] !font-bold"
         />
       </div>

@@ -17,7 +17,6 @@ import {
 import { Button } from "../components/ui/Button";
 import { DataTable } from "../components/ui/DataTable";
 import { TableActions } from "../components/ui/TableExportActions";
-import { Select } from "../components/ui/Select";
 import { PageLayout } from "../components/layout/PageLayout";
 import { toast } from "sonner";
 import { usePatch } from "../hooks/usePatch";

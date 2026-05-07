@@ -346,9 +346,23 @@ export default function TransactionReport() {
       center: true,
       cell: ({ row }) => <span className="text-[12px]  text-slate-500">{formatToINR(row.original.commission)}</span>
     },
+     {
+      header: "Charge",
+      accessorKey: "charge",
+      center: true,
+      cell: ({ row }) => <span className="text-[12px] 
+       text-slate-500">{formatToINR(row.original.charge)}</span>
+    },
+     {
+      header: "GST",
+      accessorKey: "gstAmount",
+      center: true,
+      cell: ({ row }) => <span className="text-[12px] 
+       text-slate-500">{formatToINR(row.original.gst)}</span>
+    },
     {
       header: "TDS",
-      accessorKey: "tds",
+      accessorKey: "tdsAmount",
       center: true,
       cell: ({ row }) => <span className="text-[12px] 
        text-slate-500">{formatToINR(row.original.tds)}</span>
@@ -369,7 +383,7 @@ export default function TransactionReport() {
         <ActionButtons
           onView={() => {
             navigate(
-              `/transaction-report-details/${row.original?._id}`,
+              `/transaction-report/${service}/${row.original?._id}`,
               {
                 state: {
                   service
