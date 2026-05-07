@@ -83,7 +83,6 @@ export default function AEPS() {
 
         if (profile?.aeps1?.isLoginRequired)
           setCurrentStep('login');
-
         else {
           navigate("/aeps/aeps-service", { replace: true });
         }
@@ -708,6 +707,7 @@ export default function AEPS() {
                     <div className="space-y-2">
                       <label className="text-[10px] font-black tracking-widest uppercase text-slate-400 ml-1">Gender</label>
                       <Select
+                        placeholder='Select Gender'
                         options={[{ value: 'M', label: 'Male' }, { value: 'F', label: 'Female' }, { value: 'O', label: 'Other' }]}
                         value={formData.gender}
                         onChange={(val) => setFormData({ ...formData, gender: val })}
@@ -746,7 +746,7 @@ export default function AEPS() {
                   </div>
                 </div>
                 <h2 className="text-2xl font-black text-slate-900 tracking-tightest uppercase mb-1">
-                  Onboarding 
+                  Onboarding Hub
                 </h2>
                 <p className="text-slate-400 text-[9px] font-black uppercase tracking-[0.2em] leading-tight">
                   HARDWARE SYNCHRONIZATION PENDING

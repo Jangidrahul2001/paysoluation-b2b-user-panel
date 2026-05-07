@@ -152,7 +152,7 @@ export default function MoneyTransferDashboard() {
             })
             setTransferModalOpen(true)
           }}
-          className="h-9 px-4 rounded-xl bg-slate-900 border border-slate-900 hover:bg-slate-800 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200"
+          className="h-9 px-4 rounded-xl bg-indigo-600 border border-indigo-600 hover:bg-indigo-700 text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-slate-200"
         >
           TRANSFER
         </Button>

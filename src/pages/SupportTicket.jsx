@@ -329,7 +329,7 @@ export default function SupportTicket() {
                     <Select
                       error={errors.serviceId}
                       options={serviceList}
-                      placeholder="Select Service / Category"
+                      placeholder="Select Service"
                       value={formData.serviceId}
                       onChange={(value) => {
                         setFormData({ ...formData, serviceId: value });

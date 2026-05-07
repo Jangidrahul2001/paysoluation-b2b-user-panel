@@ -364,7 +364,7 @@ export default function AccountWhitelist() {
                 ]}
                 value={statusFilter}
                 onChange={(value) => setStatusFilter(value)}
-                placeholder="Select Filter"
+                placeholder="Select Status"
                 className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[13px] !font-bold"
               />
             </div>
@@ -539,7 +539,7 @@ export default function AccountWhitelist() {
                   <div className="space-y-2">
                     <Select
                       label="Financial Institution"
-                      placeholder="Select Banking Partner"
+                      placeholder="Select Bank"
                       options={banksList}
                       searchable={true}
                       value={formData.bankName}

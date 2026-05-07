@@ -419,7 +419,7 @@ export default function TransactionDetailPage() {
         </div>
       }
     >
-  
+
 
       <div className="w-full pb-20 space-y-5">
 
@@ -539,8 +539,8 @@ export default function TransactionDetailPage() {
                   <DetailItem label="Account Balance" value={data.balance} icon={IndianRupeeIcon} color="indigo" />
                 }
                 {
-                  data.message &&
-                  <DetailItem label="Description" value={data.message} icon={FileText} color="indigo" />
+                  (data.message || data.description) &&
+                  <DetailItem label="Description" value={data.message || data.description} icon={FileText} color="indigo" />
                 }
 
               </div>

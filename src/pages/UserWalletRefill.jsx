@@ -446,7 +446,7 @@ export default function UserWalletRefill() {
 
                   <Select
                     label={"Registered User"}
-                    placeholder="Select a registered user..."
+                    placeholder="Select  User"
                     options={userOptions}
                     value={formData.userId}
                     onChange={(val) => { setFormData({ ...formData, userId: val }); setErrors(prev => ({ ...prev, userId: "" })) }}

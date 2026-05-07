@@ -204,10 +204,10 @@ export default function BillPayment() {
     },
     onError: (err) => {
       setSelectedBiller(null)
-      customerMobile("")
+      setCustomerMobile("")
       setBill(null)
-      isBillValidated(false)
-      showBillReceipt(false)
+      setIsBillValidated(false)
+      setShowBillReceipt(false)
       setBillValidateData({});
       setFormData({ billerId: null, inputParams: [] });
       setBillerFields([]);
@@ -401,7 +401,7 @@ export default function BillPayment() {
                   <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest leading-relaxed">Certified by BBPS for secure real-time settlements.</p>
                 </div>
                 <Button
-                  onClick={() => navigate("/service-report/bbps")}
+                  onClick={() => navigate("/transaction-report/bbps")}
                   className="relative z-10 h-12 px-6 bg-indigo-600 text-white rounded-xl text-[10px]  uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg"
                 >
                   View Pay History

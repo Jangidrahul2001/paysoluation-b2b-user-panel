@@ -568,7 +568,7 @@ export default function AEPSPayout() {
                         label: `${acc.accountHolderName || acc.holder} - ${acc.accountNumber?.slice(-4) || 'xxxx'}`,
                         ...acc,
                       }))}
-                      placeholder="Select Destination"
+                      placeholder="Select Account"
                       error={errors.bankId}
                       value={formData.bankId}
                       onChange={(value) => {

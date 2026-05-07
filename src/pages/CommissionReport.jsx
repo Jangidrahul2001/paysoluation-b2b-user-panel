@@ -183,6 +183,7 @@ export default function CommissionReport() {
       {/* Service Selection Node */}
       <div className="flex-1 sm:flex-none sm:min-w-[160px]">
         <Select
+          placeholder="Select Service"
           options={SERVICE_OPTIONS}
           value={serviceFilter}
           onChange={setServiceFilter}

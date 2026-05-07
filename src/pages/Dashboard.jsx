@@ -597,7 +597,7 @@ export default function Dashboard() {
                 isNarrow ? "flex-1" : "w-[120px] xs:w-[150px] sm:w-[190px]"
               )}>
                 <Select
-                  placeholder="All Services"
+                  placeholder="Select Service"
                   options={serviceOptions}
                   value={selectedService}
                   onChange={setSelectedService}

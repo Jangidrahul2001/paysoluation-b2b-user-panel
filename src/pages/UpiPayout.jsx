@@ -520,7 +520,7 @@ export default function UpiPayout() {
                   <div className="space-y-2">
 
                     <Input
-                      label={"Transfer Amount"}
+                      label="Transfer Amount"
                       icon={Banknote}
                       placeholder="0.00"
 
