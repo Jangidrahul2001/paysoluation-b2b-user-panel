@@ -346,14 +346,14 @@ export default function TransactionReport() {
       center: true,
       cell: ({ row }) => <span className="text-[12px]  text-slate-500">{formatToINR(row.original.commission)}</span>
     },
-     {
+    {
       header: "Charge",
       accessorKey: "charge",
       center: true,
       cell: ({ row }) => <span className="text-[12px] 
        text-slate-500">{formatToINR(row.original.charge)}</span>
     },
-     {
+    {
       header: "GST",
       accessorKey: "gstAmount",
       center: true,
@@ -415,7 +415,7 @@ export default function TransactionReport() {
 
   const headerActions = (
     <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-      <div className="flex-1 sm:flex-none sm:w-[180px] min-w-[140px]">
+      <div className="flex-1 sm:flex-none sm:w-[160px] min-w-[120px]">
         <DownLineUserSelect placeholder='Select User' value={filters.selectedUser} onChange={(val) => setFilters(prev => ({ ...prev, selectedUser: val }))} className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[13px] !font-bold" />
       </div>
 

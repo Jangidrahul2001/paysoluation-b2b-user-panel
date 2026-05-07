@@ -52,8 +52,36 @@ import ImageModal from "../../components/ui/ImageModal";
 import { ActionButtons } from "../../components/ui/ActionButton";
 import ExpandableMessage from "../../components/ui/ExpandableMessage";
 
-
-
+// Mock Data for Banks
+const BANK_OPTIONS = [
+  {
+    value: "hdfc",
+    label: "HDFC BANK",
+    accountNo: "50200108120365",
+    ifsc: "HDFC0007731",
+    payee: "CAMLENIO SOFTWARE PRIVATE LIMITED",
+    qrCode:
+      "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=camlenio@hdfcbank&pn=Camlenio%20Software&mc=0000&tid=1234567890&tr=1234567890&tn=Payment%20to%20Camlenio&am=0&cu=INR",
+  },
+  {
+    value: "icici",
+    label: "ICICI BANK",
+    accountNo: "123456789012",
+    ifsc: "ICIC0001234",
+    payee: "CAMLENIO SOFTWARE PRIVATE LIMITED",
+    qrCode:
+      "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=camlenio@icici&pn=Camlenio%20Software&mc=0000&tid=0987654321&tr=0987654321&tn=Payment%20to%20Camlenio&am=0&cu=INR",
+  },
+  {
+    value: "sbi",
+    label: "STATE BANK OF INDIA",
+    accountNo: "987654321098",
+    ifsc: "SBIN0001234",
+    payee: "CAMLENIO SOFTWARE PRIVATE LIMITED",
+    qrCode:
+      "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=camlenio@sbi&pn=Camlenio%20Software&mc=0000&tid=1122334455&tr=1122334455&tn=Payment%20to%20Camlenio&am=0&cu=INR",
+  },
+];
 
 const PAYMENT_MODES = [
   { value: "upi", label: "UPI" },
@@ -444,18 +472,13 @@ const OfflineTopup = () => {
     toast.success("Copied to clipboard");
   };
 
-  const actions = (
-    <div className="flex items-center gap-2">
-      <span className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-      <span className="text-xs sm:text-sm text-[var(--content-text-muted)] font-medium">Terminal Active</span>
-    </div>
-  );
+
 
   return (
     <PageLayout
       title="Offline Topup"
       subtitle="Manual payment gateway for wallet recharge"
-      actions={actions}
+
       className="max-w-[1600px] mx-auto py-4"
     >
 
@@ -830,7 +853,7 @@ const OfflineTopup = () => {
       {/* 3. Report Table Section with Unified Design */}
       <div className="mx-2 mt-8 space-y-4">
         {/* Navigation Action */}
-        <div className="flex items-center justify-between px-2">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-6 bg-indigo-600 rounded-full" />
             <h3 className="text-sm font-black text-slate-900 uppercase tracking-[0.15em]">Recent Requests</h3>

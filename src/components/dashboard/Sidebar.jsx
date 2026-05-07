@@ -29,7 +29,7 @@ import {
 import { m, AnimatePresence } from "framer-motion";
 import { useSelector } from "react-redux";
 import { Button } from "../ui/Button";
-import { handleValidationError } from "../../utils/helperFunction";
+import { capitalize, handleValidationError } from "../../utils/helperFunction";
 import { toast } from "sonner";
 import { useFetch } from "../../hooks/useFetch";
 import { apiEndpoints } from "../../api/apiEndpoints";
@@ -465,7 +465,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
               </Button>
             ) : (
               <>
-                <div to="/" className="flex items-center gap-4 overflow-hidden relative z-20">
+                <div to="/" className="flex items-center gap-2 overflow-hidden relative z-20">
                   <m.div
                     layout
                     className="h-8 w-8 md:h-9 lg:h-10 md:w-9 lg:w-10 rounded-full bg-indigo-600 flex items-center justify-center text-white p-2 shrink-0"
@@ -473,8 +473,8 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
                     <span className="font-bold text-sm md:text-md">{`${profile?.roleName?.split(" ")[0]?.charAt(0) || ''}${profile?.roleName?.split(" ")?.[1]?.charAt(0) || ''}`}</span>
                   </m.div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-[1.35rem] text-slate-900 tracking-tight leading-none">
-                      User
+                    <span className="font-bold text-[16px] text-slate-900 tracking-tight leading-none">
+                      {`${capitalize(profile?.firstName)}` || "User"}
                     </span>
                     <span className="text-[11px] text-slate-400 font-medium tracking-wide">
                       {profile?.roleName || "Verified Merchant"}

@@ -668,7 +668,7 @@ export default function Dashboard() {
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
                           onClick={() => setIsCalendarOpen(false)}
-                          className="absolute inset-0 bg-indigo-600/40 backdrop-blur-sm"
+                          className="absolute inset-0 bg-slate-600/40 backdrop-blur-sm"
                         />
                         <motion.div
                           initial={{ y: "100%" }}
