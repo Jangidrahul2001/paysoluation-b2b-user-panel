@@ -187,7 +187,6 @@ export default function CommissionReport() {
           options={SERVICE_OPTIONS}
           value={serviceFilter}
           onChange={setServiceFilter}
-          placeholder="Service"
           className="!h-10 !rounded-full !bg-white border-slate-200 shadow-sm !text-[11px] !font-black !tracking-widest"
         />
       </div>
