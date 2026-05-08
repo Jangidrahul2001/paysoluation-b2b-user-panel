@@ -3,7 +3,7 @@ import react from "@vitejs/plugin-react";
 import fs from "fs";
 
 export default defineConfig({
-  // base: '/user/',
+  base: '/user/',
   plugins: [react()],
   assetsInclude: ['**/*.lottie'], // Add this line
   server: {

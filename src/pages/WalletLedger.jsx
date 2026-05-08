@@ -424,11 +424,11 @@ export default function WalletLedger() {
       },
       {
         header: "CHARGES",
-        accessorKey: "charge",
+        accessorKey: "chargesAmount",
         center: true,
         cell: ({ row }) => (
           <span className="text-[13px] text-slate-800">
-            {formatToINR(row.original.charge)}
+            {formatToINR(row.original.chargesAmount)}
           </span>
         ),
       },

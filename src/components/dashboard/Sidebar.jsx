@@ -472,12 +472,12 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
                   >
                     <span className="font-bold text-sm md:text-md">{`${profile?.roleName?.split(" ")[0]?.charAt(0) || ''}${profile?.roleName?.split(" ")?.[1]?.charAt(0) || ''}`}</span>
                   </m.div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[16px] text-slate-900 tracking-tight leading-none">
-                      {`${capitalize(profile?.firstName)}` || "User"}
-                    </span>
-                    <span className="text-[11px] text-slate-400 font-medium tracking-wide">
+                   <div className="flex flex-col">
+                    <span className="font-bold text-[14px] text-slate-900 tracking-tight leading-none">
                       {profile?.roleName || "Verified Merchant"}
+                    </span>
+                    <span className="text-[11px] text-slate-500  font-medium tracking-wide">                      
+                      {`${capitalize(profile?.firstName)}` || "User"}
                     </span>
                   </div>
                 </div>
