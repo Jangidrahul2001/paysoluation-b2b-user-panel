@@ -247,8 +247,7 @@ function App() {
         {showWelcome && <WelcomeScreen key="welcome-screen" />}
       </AnimatePresence>
 
-      <Router basename="/user">
-      {/* <Router> */}
+      <Router basename={import.meta.env.VITE_BASENAME}>      
         <div className="app-container">
           <GlobalToaster />
           <AnimatedRoutes />
