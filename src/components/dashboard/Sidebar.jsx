@@ -71,7 +71,7 @@ const sidebarGroups = [
       { key: "bbps", title: "Bill Payment", href: "/bill-payment", hasPipeline: false, icon: FileText },
       { key: "aeps", title: "AEPS Payout", href: "/aeps-payout", hasPipeline: false, icon: CreditCard },
       { key: "xpress-payout", title: "Xpress Transfer", href: "/xpress-transfer", hasPipeline: false, icon: Banknote },
-      { key: "upi-payout", title: "UPI Payout", href: "/upi-payout", hasPipeline: false, icon: Banknote },
+      // { key: "upi-payout", title: "UPI Payout", href: "/upi-payout", hasPipeline: false, icon: Banknote },
     ],
     key: "services"
   },
@@ -472,7 +472,7 @@ export default function Sidebar({ isSidebarOpen, setIsSidebarOpen, isMobile }) {
                   >
                     <span className="font-bold text-sm md:text-md">{`${profile?.roleName?.split(" ")[0]?.charAt(0) || ''}${profile?.roleName?.split(" ")?.[1]?.charAt(0) || ''}`}</span>
                   </m.div>
-                   <div className="flex flex-col">
+                  <div className="flex flex-col">
                     <span className="font-bold text-[14px] text-slate-900 tracking-tight leading-none">
                       {profile?.roleName || "Verified Merchant"}
                     </span>

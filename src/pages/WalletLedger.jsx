@@ -486,21 +486,21 @@ export default function WalletLedger() {
           <ExpandableMessage text={row.original.description} />
         ),
       },
-      {
-        header: "ACTION",
-        accessorKey: "action",
-        center: true,
-        cell: ({ row }) => (
-          <ActionButtons
-            onView={() =>
-              row.original?._id &&
-              navigate(`/wallet-ledger/details/${row.original._id}`)
-            }
-            viewTitle="View Ledger Details"
-          />
+      // {
+      //   header: "ACTION",
+      //   accessorKey: "action",
+      //   center: true,
+      //   cell: ({ row }) => (
+      //     <ActionButtons
+      //       onView={() =>
+      //         row.original?._id &&
+      //         navigate(`/wallet-ledger/details/${row.original._id}`)
+      //       }
+      //       viewTitle="View Ledger Details"
+      //     />
 
-        ),
-      },
+      //   ),
+      // },
     ],
     [pageIndex, pageSize],
   );
