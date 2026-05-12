@@ -41,13 +41,10 @@ api.interceptors.response.use(
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       localStorage.removeItem("isAuthenticated");
-
-      if (
-        window.location.pathname !== "/login" &&
-        window.location.pathname !== "/signup"
-      ) {
-        window.location.href = "/login";
-      }
+      
+      if (window.location.pathname !== `${import.meta.env.VITE_BASENAME}/login` && window.location.pathname !== `${import.meta.env.VITE_BASENAME}/signup`) {
+        window.location.href = `${import.meta.env.VITE_BASENAME}/login`;
+      }    
 
       return Promise.reject({
         success: false,

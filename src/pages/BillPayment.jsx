@@ -163,6 +163,7 @@ export default function BillPayment() {
         setShowBillReceipt(true)
         setCustomerName(data?.data?.data?.billerResponse?.customerName || "")
         setIsLoadingInitial(false);
+        setIsButtonDisable(true)
       }
     },
     onError: (err) => toast.error(handleValidationError(err) || "Could not fetch bill details"),
@@ -173,6 +174,7 @@ export default function BillPayment() {
       if (data?.success) {
         setIsBillValidated(true)
         setFormData((prev) => ({ ...prev, billValidate: data.data }));
+        setIsButtonDisable(true)
 
       };
     },
@@ -184,7 +186,7 @@ export default function BillPayment() {
       if (data?.success) {
         console.log(data, "payment response")
         toast.success("Bill Payment Successful!");
-
+        setIsButtonDisable(false)
         const selectedCategoryName = selectedService?.name;
         setRecieptModalData({
           title: "Transaction Successful",
@@ -205,6 +207,7 @@ export default function BillPayment() {
       }
     },
     onError: (err) => {
+      setIsButtonDisable(false)
       setSelectedBiller(null)
       setCustomerMobile("")
        setCustomerName("")
