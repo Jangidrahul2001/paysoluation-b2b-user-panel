@@ -192,10 +192,10 @@ export default function BillPayment() {
           subTitleLabel: "Amount",
           subTitleValue: formatToINR(bill?.amount),
           receiptData: {
-            "Bill No.": data?.data?.billNumber || "",
+            "Bill No.": data?.data?.billNumber||data?.data?.RespBillNumber || "",
             "Customer Mobile": customerMobile || "",
             "Service": selectedCategoryName || "",
-            "Transaction Id": data?.data?.txnid || "",
+            "Transaction Id": data?.data?.referenceId  || "",
             status: "Transaction Successful"
           },
           isOpen: true
@@ -207,7 +207,7 @@ export default function BillPayment() {
     onError: (err) => {
       setSelectedBiller(null)
       setCustomerMobile("")
-      setCustomerName("")
+       setCustomerName("")
       setBill(null)
       setIsBillValidated(false)
       setShowBillReceipt(false)
@@ -284,7 +284,9 @@ export default function BillPayment() {
     const billAmount = Number(bill?.amount ?? 0) * 100;
     payBill({
       ...bill,
-      ...(bill?.data?.billerResponse || {}),
+        ...(bill?.data?.billerResponse || {}),
+      additionalInfo:(bill?.data?.additionalInfo?.info || []),
+        ...(bill?.data?.inputParams || {}),
       billAmount: billAmount,
       customerName: customerName,
       billerId: selectedBiller?.billerId,
