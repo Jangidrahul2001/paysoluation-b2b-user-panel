@@ -125,7 +125,7 @@ export default function Aeps2DailyLogin() {
   if (profileLoading || (!profile && !profileError)) {
     return (
       <PageLayout
-        title="Aadhaar Enabled Payment System"
+        title="Aadhaar Enabled Payment System (AePS)"
         subtitle="Modernized Biometric Authentication Gateway"
         className="max-w-[1600px] mx-auto py-6"
       >
@@ -194,7 +194,7 @@ export default function Aeps2DailyLogin() {
                   error={errors.aadhaar}
                   placeholder="0000 0000 0000"
                   maxLength={12}
-                  className="bg-slate-50 border-slate-200/50 shadow-none h-9 md:h-11 text-xl font-black text-center tracking-[0.4em] placeholder:text-slate-200"
+                  className="bg-slate-50 border-slate-200/50 shadow-none h-9 md:h-11 text-xl font-black  tracking-[0.4em] placeholder:text-slate-200"
                 />
 
                 <div className="flex justify-center items-center gap-4">

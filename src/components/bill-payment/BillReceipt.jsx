@@ -197,7 +197,7 @@ export const BillReceipt = ({ bill, customerMobile, setCustomerMobile, isPaying,
                               showFields.map((field, idx) => (
                                  <div key={idx} className="flex justify-between items-center group/row">
                                     <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-tight group-hover/row:text-slate-600 transition-colors">{formatLabel(field?.name)}</span>
-                                    <span className="text-[11.5px] font-black text-slate-800 text-right truncate pl-4 max-w-[170px]">
+                                    <span title={field?.value} className="text-[11.5px] font-black text-slate-800 text-right truncate pl-4 max-w-[170px]">
                                        {field?.value}
                                     </span>
                                  </div>
@@ -207,7 +207,7 @@ export const BillReceipt = ({ bill, customerMobile, setCustomerMobile, isPaying,
                            </> :
                               <div key={key} className="flex justify-between items-center group/row">
                                  <span className="text-[9.5px] font-bold text-slate-400 uppercase tracking-tight group-hover/row:text-slate-600 transition-colors">{formatLabel(key)}</span>
-                                 <span className="text-[11.5px] font-black text-slate-800 text-right  pl-4 ">
+                                 <span title={value} className="text-[11.5px] font-black text-slate-800 text-right truncate pl-4 max-w-[170px]">
                                     {value}
                                  </span>
                               </div>

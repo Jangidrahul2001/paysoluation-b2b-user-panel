@@ -838,7 +838,7 @@ export default function AEPS() {
                     error={errors.aadhaar}
                     placeholder="0000 0000 0000"
                     maxLength={12}
-                    className="bg-slate-50 border-slate-200/50 shadow-none h-9 md:h-11 text-xl font-black text-center tracking-[0.4em] placeholder:text-slate-200"
+                    className="bg-slate-50 border-slate-200/50 shadow-none h-9 md:h-11 text-xl font-black  tracking-[0.4em] placeholder:text-slate-200"
                   />
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

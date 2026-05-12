@@ -163,6 +163,7 @@ export default function BillPayment() {
         setShowBillReceipt(true)
         setCustomerName(data?.data?.data?.billerResponse?.customerName || "")
         setIsLoadingInitial(false);
+        setIsButtonDisable(true)
       }
     },
     onError: (err) => toast.error(handleValidationError(err) || "Could not fetch bill details"),
@@ -173,6 +174,7 @@ export default function BillPayment() {
       if (data?.success) {
         setIsBillValidated(true)
         setFormData((prev) => ({ ...prev, billValidate: data.data }));
+        setIsButtonDisable(true)
 
       };
     },
@@ -184,7 +186,7 @@ export default function BillPayment() {
       if (data?.success) {
         console.log(data, "payment response")
         toast.success("Bill Payment Successful!");
-
+        setIsButtonDisable(false)
         const selectedCategoryName = selectedService?.name;
         setRecieptModalData({
           title: "Transaction Successful",
@@ -192,10 +194,10 @@ export default function BillPayment() {
           subTitleLabel: "Amount",
           subTitleValue: formatToINR(bill?.amount),
           receiptData: {
-            "Bill No.": data?.data?.billNumber || "",
+            "Bill No.": data?.data?.billNumber||data?.data?.RespBillNumber || "",
             "Customer Mobile": customerMobile || "",
             "Service": selectedCategoryName || "",
-            "Transaction Id": data?.data?.txnid || "",
+            "Transaction Id": data?.data?.referenceId  || "",
             status: "Transaction Successful"
           },
           isOpen: true
@@ -205,9 +207,10 @@ export default function BillPayment() {
       }
     },
     onError: (err) => {
+      setIsButtonDisable(false)
       setSelectedBiller(null)
       setCustomerMobile("")
-      setCustomerName("")
+       setCustomerName("")
       setBill(null)
       setIsBillValidated(false)
       setShowBillReceipt(false)
@@ -284,7 +287,9 @@ export default function BillPayment() {
     const billAmount = Number(bill?.amount ?? 0) * 100;
     payBill({
       ...bill,
-      ...(bill?.data?.billerResponse || {}),
+        ...(bill?.data?.billerResponse || {}),
+      additionalInfo:(bill?.data?.additionalInfo?.info || []),
+        ...(bill?.data?.inputParams || {}),
       billAmount: billAmount,
       customerName: customerName,
       billerId: selectedBiller?.billerId,
