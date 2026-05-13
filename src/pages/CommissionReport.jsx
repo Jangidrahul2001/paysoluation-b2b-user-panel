@@ -4,12 +4,13 @@ import {
   Percent,
   TrendingUp,
   Clock,
-  ChevronDown
+  ChevronDown,
+  IndianRupee
 } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { format } from "date-fns";
 import { createPortal } from "react-dom";
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import { Select } from '../components/ui/Select';
 import { butteryDropdown } from "../lib/animations";
 import ClickToCopy from '../components/ui/ClickToCopy';
@@ -18,180 +19,300 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { PageLayout } from '../components/layout/PageLayout';
 import { useClickOutside } from "../hooks/use-click-outside";
 import { CustomDualCalendar } from "../components/dashboard/CustomDualCalendar";
+import { useFetch } from "../hooks/useFetch";
+import { apiEndpoints } from '../api/apiEndpoints';
+import { toast } from 'sonner';
+import { formatDate, formatDateForBackend, formatToINR, handleValidationError } from '../utils/helperFunction';
+import ExpandableMessage from '../components/ui/ExpandableMessage';
 
-// Service Mapping
-const SERVICE_OPTIONS = [
-  { label: "All Services", value: "All" },
-  { label: "Mobile Recharge", value: "Recharge" },
-  { label: "AEPS Payout", value: "AEPS" },
-  { label: "DMT Transfer", value: "DMT" },
-  { label: "Bill Payment", value: "Bill" },
-];
-
-// Mock Data
-const COMMISSION_LOGS = [
-  {
-    id: 1,
-    txnId: "COMM829102",
-    receivedDate: "16 Feb 2026 05:00 PM",
-    type: "Recharge",
-    commission: 12.50,
-    tds: 0.62,
-    net: 11.88,
-    currentBalance: 1013.88,
-    description: "Commission for Jio Recharge TXN-38291"
-  },
-  {
-    id: 2,
-    txnId: "COMM829103",
-    receivedDate: "16 Feb 2026 04:30 PM",
-    type: "AEPS",
-    commission: 8.00,
-    tds: 0.40,
-    net: 7.60,
-    currentBalance: 1002.00,
-    description: "Commission for AEPS Withdrawal TXN-38295"
-  }
-];
-
-const StatCard = ({ title, value, icon: Icon, trend, color, type }) => {
+const StatCard = ({
+  label,
+  count,
+  amount,
+  type,
+  icon: Icon,
+  subLabel1,
+  subLabel2,
+}) => {
   const styles = {
-    indigo: { bg: "bg-indigo-100/50", icon: "text-indigo-600", border: "border-indigo-200/70", text: "text-indigo-700", gradient: "from-white to-indigo-50/50" },
-    rose: { bg: "bg-rose-100/50", icon: "text-rose-600", border: "border-rose-200/70", text: "text-rose-700", gradient: "from-white to-rose-50/50" },
-    emerald: { bg: "bg-emerald-100/50", icon: "text-emerald-600", border: "border-emerald-200/70", text: "text-emerald-700", gradient: "from-white to-emerald-50/50" },
-    amber: { bg: "bg-amber-100/50", icon: "text-amber-600", border: "border-amber-200/70", text: "text-amber-700", gradient: "from-white to-amber-50/50" }
-  }[color] || { bg: "bg-slate-100", icon: "text-slate-600", border: "border-slate-100", text: "text-slate-700", gradient: "from-white to-slate-50" };
+    emerald: {
+      bg: "bg-emerald-100",
+      icon: "text-emerald-600",
+      border: "border-emerald-100",
+      text: "text-emerald-700",
+      gradient: "from-white to-emerald-50",
+    },
+    voilet: {
+      bg: "bg-violet-100",
+      icon: "text-violet-600",
+      border: "border-violet-100",
+      text: "text-violet-700",
+      gradient: "from-white to-violet-50",
+    },
+    indigo: {
+      bg: "bg-indigo-100",
+      icon: "text-indigo-600",
+      border: "border-indigo-100",
+      text: "text-indigo-700",
+      gradient: "from-white to-indigo-50",
+    },
+    orange: {
+      bg: "bg-orange-100",
+      icon: "text-orange-600",
+      border: "border-orange-100",
+      text: "text-orange-700",
+      gradient: "from-white to-orange-50",
+    },
+
+  }[type];
 
   return (
     <motion.div
+      whileHover={{ shadow: "0 10px 25px -5px rgba(0,0,0,0.05)" }}
       className={cn(
-        "p-6 rounded-[2rem] bg-gradient-to-tr border-1 shadow-sm transition-all duration-300 relative group overflow-hidden",
+        "p-5 rounded-2xl bg-gradient-to-tr border shadow-sm transition-all duration-300 h-full",
         styles.gradient,
-        styles.border
+        styles.border,
       )}
     >
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
-          <div className={cn("p-3 rounded-2xl bg-white shadow-sm border border-slate-100 transition-transform group-hover:scale-110 duration-500", styles.icon)}>
-            <Icon size={20} />
-          </div>
-          <div className="space-y-0.5">
-            <p className="text-[11px] font-black text-slate-500 uppercase tracking-widest leading-none">{title}</p>
-            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-tight">System Node Status: Active</p>
-          </div>
+      <div className="flex items-center gap-3 mb-4">
+        <div className={cn("p-2.5 rounded-xl", styles.bg)}>
+          <Icon className={cn("w-5 h-5", styles.icon)} />
         </div>
-        <div className={cn("px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest", styles.bg, styles.text, styles.border)}>
-          Monthly
-        </div>
+        <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-none translate-y-[1px]">
+          {label}
+        </p>
       </div>
-
-      <div className="flex items-end justify-between">
-        <div className="space-y-1">
-          <h4 className="text-3xl font-black text-slate-800 tracking-tighter leading-none">{value}</h4>
-          <div className="flex items-center gap-2">
-            <div className={cn("w-1.5 h-1.5 rounded-full animate-pulse", trend === 'up' ? "bg-emerald-500" : "bg-rose-500")} />
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Commission Logic Active</span>
+      <div className="space-y-2.5">
+        {(
+          <div className="flex items-center justify-between pt-1">
+            <span className="text-[10px] font-extrabold text-slate-400 uppercase tracking-tight">
+              {subLabel1 || "Total Earned"}
+            </span>
+            <span className={cn("text-xl font-black", styles.text)}>
+              {count && count}
+              {amount && formatToINR(amount)}
+            </span>
           </div>
-        </div>
-        <div className={cn("w-10 h-10 rounded-full border flex items-center justify-center opacity-20 group-hover:opacity-100 transition-opacity duration-500", styles.border)}>
-          <ArrowUpRight size={18} className={cn(trend === 'down' && "rotate-90", styles.icon)} />
-        </div>
+        )}
       </div>
     </motion.div>
   );
 };
 
 export default function CommissionReport() {
-  const [filters, setFilters] = useState({
-    search: ''
-  });
+  const [isLoading, setIsLoading] = useState(true);
+  const [search, setSearch] = useState('');
   const [serviceFilter, setServiceFilter] = useState("All");
   const [date, setDate] = useState({ from: null, to: null });
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const calendarRef = useRef(null);
   const [columnVisibility, setColumnVisibility] = useState({});
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [totalRecords, setTotalRecords] = useState(0);
+  const [reportData, setReportData] = useState([]);
+  const [serviceOptions, setServiceOptions] = useState([]);
+  const [stats, setStats] = useState({});
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
 
   useClickOutside(calendarRef, () => setIsCalendarOpen(false));
 
-  const columns = [
+  // Fetch services for dropdown
+  const { refetch: fetchServices } = useFetch(
+    apiEndpoints.allServiceList,
     {
-      header: "SR. No.",
-      accessorKey: "id",
-      center: true,
-      className: "w-16",
-      cell: ({ row }) => <span className="text-xs font-bold text-slate-500">{row.index + 1}</span>
+      onSuccess: (data) => {
+        if (data.success) {
+          const services = [
+            { label: "All Services", value: "All" },
+            ...data.data.map(service => ({
+              label: service.name || service.serviceName,
+              value: service.name || service.serviceName
+            }))
+          ];
+          setServiceOptions(services);
+        }
+      },
+      onError: (error) => {
+        console.log("Error fetching services:", error);
+        toast.error(handleValidationError(error) || "Failed to fetch services");
+      }
     },
+    true
+  );
+
+  const { refetch: fetchCommissionStats } = useFetch(
+    `${apiEndpoints.fetchCommissionStats}?service=${serviceFilter === "All" ? "" : serviceFilter}${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""}`,
     {
-      header: "TXN IDENTITY",
-      accessorKey: "txnId",
-      cell: ({ row }) => (
-        <div className="flex flex-col gap-1">
-          <ClickToCopy text={row.original.txnId}>
-            <span className="text-[13px] font-bold text-slate-900 leading-none">
-              {row.original.txnId}
+      onSuccess: (data) => {
+        if (data.success && data?.data) {
+          setStats(data?.data || {});
+        }
+        setIsLoading(false);
+      },
+      onError: (error) => {
+        console.log("Error fetching commission stats:", error);
+        toast.error(handleValidationError(error) || "Failed to fetch commission stats");
+        setIsLoading(false);
+      }
+    },
+    false
+  );
+
+  // Fetch commission reports with pagination
+  const { refetch: fetchReports } = useFetch(
+    `${apiEndpoints.commissionReport}?service=${serviceFilter === "All" ? "" : serviceFilter}${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""}&search=${search}&page=${pageIndex + 1}&limit=${pageSize}`,
+    {
+      onSuccess: (data) => {
+        if (data.success) {
+          setReportData(data.data || []);
+          setTotalRecords(data.pagination?.total || 0);
+
+        }
+        setIsLoading(false);
+      },
+      onError: (error) => {
+        console.log("Error fetching commission reports:", error);
+        toast.error(handleValidationError(error) || "Failed to fetch commission reports");
+        setIsLoading(false);
+      }
+    },
+    false
+  );
+
+  // Fetch data when filters change
+  useEffect(() => {
+    setIsLoading(true);
+    fetchReports();
+    fetchCommissionStats();
+  }, [serviceFilter, date, search]);
+
+  // Fetch data when pagination changes
+  useEffect(() => {
+    if (pageIndex > 0 || pageSize !== 10) {
+      fetchReports();
+    }
+  }, [pageIndex, pageSize]);
+
+  const handlePageChange = ({ pageIndex: newPage, pageSize: newSize }) => {
+    setPageIndex(newPage - 1);
+    setPageSize(newSize);
+    setIsLoading(true);
+  };
+
+  const handleReset = () => {
+    setDate({ from: null, to: null });
+    setServiceFilter("All");
+    setSearch("");
+    setPageIndex(0);
+  };
+
+  const columns = useMemo(
+    () => [
+      {
+        header: "SR.NO.",
+        accessorKey: "id",
+        center: true,
+        className: "w-16",
+        cell: ({ row, index }) => (
+          <span className="text-[12px] text-slate-500">
+            {pageIndex * pageSize + index + 1}
+          </span>
+        ),
+      },
+
+      {
+        header: "DATE",
+        accessorKey: "createdAt",
+        className: "min-w-[120px]",
+        cell: ({ row }) => (
+
+          <span className="text-[11px] whitespace-nowrap text-slate-600 uppercase tracking-tight">
+            {formatDate(row.original.createdAt)}
+          </span>
+
+        ),
+      },
+      {
+        header: "USER NAME",
+        accessorKey: "userName",
+        className: "transition-all min-w-[150px]",
+        cell: ({ row }) => (
+          <div className="flex flex-col whitespace-nowrap">
+            <div className="flex items-center gap-1.5 ">
+              <span className=" text-[13px] text-slate-900">
+                {row.original.fullName}
+              </span>
+            </div>
+            <span className="text-[11px] text-slate-500 text-center font-medium tracking-tight">
+              ( {row.original.userName} )
+            </span>
+          </div>
+        ),
+      },
+      {
+        header: "SERVICES NAME",
+        accessorKey: "serviceType",
+        className: "whitespace-nowrap min-w-[140px]",
+        cell: ({ row }) => (
+          <span className="text-[11px]  text-slate-800 uppercase tracking-tight">
+            {row.original.serviceType || "---"}
+          </span>
+        ),
+      },
+
+
+      {
+        header: "REFERENCE ID",
+        accessorKey: "referenceId",
+        className: "whitespace-nowrap min-w-[200px]",
+        cell: ({ row }) => (
+          <ClickToCopy text={row.original.referenceId} className="bg-indigo-50/50 px-2 whitespace-nowrap py-1 rounded-lg border border-indigo-100/50">
+            <span className="text-[11px] font-bold text-indigo-600 font-mono tracking-tight">
+              {row.original.referenceId}
             </span>
           </ClickToCopy>
-          <span className={cn(
-            "w-fit px-1.5 py-0.5 rounded text-[9px] font-black tracking-widest uppercase border",
-            row.original.type === 'Recharge' ? 'bg-blue-50 text-blue-600 border-blue-100' : 'bg-purple-50 text-purple-600 border-purple-100'
-          )}>
-            {row.original.type}
+        ),
+      },
+
+      {
+        header: "COMMISSION",
+        accessorKey: "amount",
+        center: true,
+        cell: ({ row }) => (
+          <span className="text-[14px] font-black text-slate-600">
+            {formatToINR(row.original.amount)}
           </span>
-        </div>
-      )
-    },
-    {
-      header: "EARNINGS (₹)",
-      accessorKey: "commission",
-      cell: ({ row }) => (
-        <div className="space-y-0.5">
-          <p className="text-[13px] font-black text-slate-900 leading-none">₹{row.original.commission.toFixed(2)}</p>
-          <p className="text-[10px] font-bold text-rose-500 uppercase tracking-tight">TDS: -₹{row.original.tds.toFixed(2)}</p>
-        </div>
-      )
-    },
-    {
-      header: "NET IMPACT",
-      accessorKey: "net",
-      cell: ({ row }) => (
-        <div className="space-y-0.5">
-          <p className="text-[15px] font-black text-emerald-600 tracking-tighter leading-none">₹{row.original.net.toFixed(2)}</p>
-          <p className="text-[10px] font-bold text-slate-400 tracking-tight uppercase">Bal: ₹{row.original.currentBalance.toFixed(2)}</p>
-        </div>
-      )
-    },
-    {
-      header: "DESCRIPTION",
-      accessorKey: "description",
-      cell: ({ row }) => <p className="text-xs font-bold text-slate-500 max-w-[250px] leading-relaxed bottom-2">{row.original.description}</p>
-    },
-    {
-      header: "DATE & TIME",
-      accessorKey: "receivedDate",
-      cell: ({ row }) => (
-        <div className="space-y-0.5">
-          <p className="text-[13px] font-bold text-slate-900 leading-none">{row.original.receivedDate.split(' ').slice(0, 3).join(' ')}</p>
-          <p className="text-[10px] font-bold text-indigo-500 uppercase tracking-widest">{row.original.receivedDate.split(' ').slice(3).join(' ')}</p>
-        </div>
-      )
-    }
-  ];
+        ),
+      },
+      {
+        header: "MESSAGE",
+        accessorKey: "description",
+        className: "min-w-[150px]",
+        cell: ({ row }) => (
+          <ExpandableMessage text={row.original.description} />
+        ),
+      },
+
+    ],
+    [pageIndex, pageSize.serviceFilter],
+  );
 
   const actions = (
     <div className="relative z-[100] flex flex-wrap items-center justify-end gap-3 w-full sm:w-auto">
-      {/* Service Selection Node */}
+      {/* Service Selection */}
       <div className="flex-1 sm:flex-none sm:min-w-[160px]">
         <Select
           placeholder="Select Service"
-          options={SERVICE_OPTIONS}
+          options={serviceOptions}
           value={serviceFilter}
           onChange={setServiceFilter}
           className="!h-10 !rounded-full !bg-white border-slate-200 shadow-sm !text-[11px] !font-black !tracking-widest"
         />
       </div>
 
-      {/* Interactive Date Portal */}
+      {/* Date Range Picker */}
       <div className="relative" ref={calendarRef}>
         <div
           onClick={() => setIsCalendarOpen(!isCalendarOpen)}
@@ -226,7 +347,7 @@ export default function CommissionReport() {
                 setDate={setDate}
                 onApply={() => setIsCalendarOpen(false)}
                 onReset={() => {
-                  setDate({ from: null, to: null });
+                  handleReset();
                   setIsCalendarOpen(false);
                 }}
               />
@@ -234,7 +355,7 @@ export default function CommissionReport() {
           )}
         </AnimatePresence>
 
-        {/* Mobile Calendar Bridge */}
+        {/* Mobile Calendar */}
         {typeof document !== 'undefined' && createPortal(
           <AnimatePresence>
             {isCalendarOpen && isMobile && (
@@ -258,7 +379,7 @@ export default function CommissionReport() {
                     setDate={setDate}
                     onApply={() => setIsCalendarOpen(false)}
                     onReset={() => {
-                      setDate({ from: null, to: null });
+                      handleReset();
                       setIsCalendarOpen(false);
                     }}
                   />
@@ -272,22 +393,6 @@ export default function CommissionReport() {
     </div>
   );
 
-  const filteredLogs = COMMISSION_LOGS.filter(log => {
-    const matchesService = serviceFilter === "All" || log.type === serviceFilter;
-    const matchesSearch = log.txnId.toLowerCase().includes(filters.search.toLowerCase()) ||
-      log.description.toLowerCase().includes(filters.search.toLowerCase()) ||
-      log.type.toLowerCase().includes(filters.search.toLowerCase());
-
-    // Date filtering logic (if date.from and date.to are set)
-    const logDate = new Date(log.receivedDate);
-    const fromDate = date.from ? new Date(date.from) : null;
-    const toDate = date.to ? new Date(date.to) : null;
-
-    const matchesDate = (!fromDate || logDate >= fromDate) && (!toDate || logDate <= toDate);
-
-    return matchesService && matchesSearch && matchesDate;
-  });
-
   return (
     <PageLayout
       title="Commission Report"
@@ -295,31 +400,60 @@ export default function CommissionReport() {
       actions={actions}
       className="max-w-[1600px] mx-auto py-4"
     >
+      {/* Stats Overview */}
+      <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-4 px-2 mb-2">
 
-      {/* 2. Earnings Overview */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 px-2">
-        <StatCard title="Gross Earnings" value="₹ 4,250.00" icon={ArrowUpRight} trend="up" color="indigo" />
-        <StatCard title="TDS Deductions" value="₹ 212.50" icon={Percent} trend="down" color="rose" />
-        <StatCard title="Net Profit" value="₹ 4,037.50" icon={TrendingUp} trend="up" color="emerald" />
-        <StatCard title="Pending Payout" value="₹ 1,200.00" icon={Clock} trend="up" color="amber" />
+
+        <StatCard
+          label="Commission Count"
+          count={stats?.totalCount || 0}
+          type="emerald"
+          subLabel1="Total Commission"
+          icon={IndianRupee}
+        />
+
+        <StatCard
+          label="Total Commission "
+          amount={stats?.grossCommission || 0}
+          type="voilet"
+          subLabel1="Gross Commission"
+          icon={IndianRupee}
+        />
+        <StatCard
+          label="Total Tds"
+          amount={stats?.totalTds || 0}
+          type="orange"
+          subLabel1="Total Tds"
+          icon={IndianRupee}
+        />
+        <StatCard
+          label="Total Commission "
+          amount={stats?.netCommission || 0}
+          type="indigo"
+          subLabel1="Net Commission"
+          icon={IndianRupee}
+        />
+
       </div>
+
       <div className="space-y-4 pt-4">
         <div className="flex items-center gap-3 px-1">
           <div className="h-6 w-1.5 bg-indigo-600 rounded-full" />
-          <h2 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.2em] leading-none">Earnings Distribution Logs</h2>
+          <h2 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.2em] leading-none">Commission Distribution Logs</h2>
         </div>
         <DataTable
           fileName="commission_report"
-          searchPlaceholder="Search earnings..."
-          searchValue={filters.search}
-          searchChange={(e) => setFilters({ ...filters, search: e.target.value })}
+          searchPlaceholder="Search by reference ID, description..."
+          searchValue={search}
+          searchChange={(e) => setSearch(e.target.value)}
           columns={columns}
-          data={filteredLogs}
-          isLoading={false}
+          data={reportData}
+          isLoading={isLoading}
           columnVisibility={columnVisibility}
           setColumnVisibility={setColumnVisibility}
-          totalRecords={filteredLogs.length}
-          pageSize={10}
+          totalRecords={totalRecords}
+          pageSize={pageSize}
+          onPaginationChange={handlePageChange}
         />
       </div>
     </PageLayout>

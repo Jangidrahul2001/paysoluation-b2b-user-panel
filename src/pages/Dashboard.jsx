@@ -26,7 +26,11 @@ import {
   Globe,
   Headphones,
   Smartphone as SmartphoneIcon,
-  Download
+  Download,
+  BanknoteArrowDownIcon,
+  BanknoteIcon,
+  Send,
+  CreditCard
 } from "lucide-react"
 import { Button } from "../components/ui/Button"
 import DashboardWalletFilter from "../components/dashboard/DashboardWalletFilter"
@@ -38,8 +42,9 @@ import { cn } from "../lib/utils"
 import { useNavigate } from "react-router-dom"
 import { useFetch } from "../hooks/useFetch"
 import { apiEndpoints } from "../api/apiEndpoints"
-import { formatToINR, handleValidationError, ServiceLabel } from "../utils/helperFunction"
+import { formatDateForBackend, formatToINR, handleValidationError, ServiceLabel } from "../utils/helperFunction"
 import { toast } from "sonner"
+import { dataAttr } from "@heroui/shared-utils"
 
 // --- Improved Sub-components ---
 
@@ -216,17 +221,26 @@ const BANNER_SLIDES = [
 ];
 
 const serviceStatsObj = {
-  aeps: {
+  aeps1: {
     name: "aeps",
-    label: "AEPS",
+    label: "AEPS 1",
     amount: "0.00",
     commission: "0.00",
     icon: Fingerprint,
     color: "text-blue-600",
     bg: "bg-blue-50",
   },
-  bbps: {
-    name: "bbps",
+  aeps2: {
+    name: "aeps",
+    label: "AEPS 2",
+    amount: "0.00",
+    commission: "0.00",
+    icon: Fingerprint,
+    color: "text-blue-600",
+    bg: "bg-blue-50",
+  },
+  bbps1: {
+    name: "bbps1",
     label: "BBPS",
     amount: "0.00",
     commission: "0.00",
@@ -234,17 +248,17 @@ const serviceStatsObj = {
     color: "text-indigo-600",
     bg: "bg-indigo-50",
   },
-  dmt: {
-    name: "dmt",
+  dmt1: {
+    name: "dmt1",
     label: "DMT",
     amount: "0.00",
     commission: "0.00",
-    icon: ArrowRightLeft,
+    icon: Send,
     color: "text-blue-700",
     bg: "bg-blue-50",
   },
-  "xpress-payout": {
-    name: "xpress-payout",
+  "xpress-payout1": {
+    name: "xpress-payout1",
     label: "Payout",
     amount: "0.00",
     commission: "0.00",
@@ -252,8 +266,17 @@ const serviceStatsObj = {
     color: "text-slate-700",
     bg: "bg-slate-50",
   },
-  "aeps-payout": {
-    name: "aeps-payout",
+  "aeps-payout1": {
+    name: "aeps-payout1",
+    label: "Payout",
+    amount: "0.00",
+    commission: "0.00",
+    icon: CreditCard,
+    color: "text-slate-700",
+    bg: "bg-slate-50",
+  },
+  "upi-payout1": {
+    name: "upi-payout1",
     label: "Payout",
     amount: "0.00",
     commission: "0.00",
@@ -261,17 +284,8 @@ const serviceStatsObj = {
     color: "text-slate-700",
     bg: "bg-slate-50",
   },
-  "upi-payout": {
-    name: "upi-payout",
-    label: "Payout",
-    amount: "0.00",
-    commission: "0.00",
-    icon: Banknote,
-    color: "text-slate-700",
-    bg: "bg-slate-50",
-  },
-  recharge: {
-    name: "recharge",
+  recharge1: {
+    name: "recharge1",
     label: "Recharge",
     amount: "0.00",
     commission: "0.00",
@@ -282,13 +296,14 @@ const serviceStatsObj = {
 };
 
 const serviceStaticData = {
-  recharge: { key: "recharge", label: "Recharge", icon: Smartphone, gradient: "from-blue-500 to-indigo-600", desc: "Mobile Prep", link: "/recharge" },
-  aeps: { key: "aeps", label: "AEPS", icon: Fingerprint, gradient: "from-blue-500 to-blue-600", desc: "Cash Withdrawal", link: "/aeps" },
-  dmt: { key: "dmt", label: "Money Transfer", icon: ArrowRightLeft, gradient: "from-blue-500 to-indigo-600", desc: "Instant DMT", link: "/money-transfer" },
-  "aeps-payout": { key: "aeps-payout", label: "AEPS Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/aeps-payout" },
-  "xpress-payout": { key: "xpress-payout", label: "Xpress Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/xpress-transfer" },
-  "upi-payout": { key: "upi-payout", label: "UPI Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/xpress-transfer" },
-  bbps: { key: "bbps", label: "Bill Payment", icon: FileText, gradient: "from-blue-500 to-indigo-600", desc: "Utility Bills", link: "/bill-payment" },
+  recharge1: { key: "recharge1", label: "Recharge", icon: Smartphone, gradient: "from-blue-500 to-indigo-600", desc: "Mobile Prep", link: "/recharge" },
+  aeps1: { key: "aeps1", label: "AEPS 1", icon: Fingerprint, gradient: "from-blue-500 to-blue-600", desc: "Cash Withdrawal", link: "/aeps" },
+  aeps2: { key: "aeps2", label: "AEPS 2", icon: Fingerprint, gradient: "from-blue-500 to-blue-600", desc: "Cash Withdrawal", link: "/aeps2" },
+  dmt1: { key: "dmt1", label: "Money Transfer1", icon: ArrowRightLeft, gradient: "from-blue-500 to-indigo-600", desc: "Instant DMT", link: "/money-transfer" },
+  "aeps-payout1": { key: "aeps-payout1", label: "AEPS Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/aeps-payout" },
+  "xpress-payout1": { key: "xpress-payout1", label: "Xpress Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/xpress-transfer" },
+  "upi-payout1": { key: "upi-payout1", label: "UPI Payout", icon: Wallet, gradient: "from-blue-500 to-blue-600", desc: "Instant Settl.", link: "/xpress-transfer" },
+  bbps1: { key: "bbps1", label: "Bill Payment", icon: FileText, gradient: "from-blue-500 to-indigo-600", desc: "Utility Bills", link: "/bill-payment" },
   "online-service": { key: "online-service", label: "Online Service", icon: Globe, gradient: "from-blue-500 to-blue-600", desc: "Online service", link: "/offline-service" },
   "offline-service": { key: "oofline-service", label: "Offline Service", icon: Landmark, gradient: "from-blue-500 to-indigo-600", desc: "Offline service", link: "/online-service" },
 };
@@ -443,15 +458,25 @@ export default function Dashboard() {
   })
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [selectedService, setSelectedService] = useState("");
+  const [performanceStatsServicewise, setPerformanceStatsServicewise] = useState({
+    successTransaction: 0,
+    failedTransaction: 0,
+    successAmount: 0,
+    failedAmount: 0,
+    successPercent: 0,
+    failedPercent: 0
+  })
+  const [serviceVolumeData, setServiceVolumeData] = useState([])
   const calendarRef = useRef(null);
 
   // Responsive check for portal
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const [isNarrow, setIsNarrow] = useState(false);
   const containerRef = useRef(null);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 1024);
+    const handleResize = () => setIsMobile(window.innerWidth < 640);
+
     window.addEventListener('resize', handleResize);
 
     // Adaptive layout for header based on available width
@@ -480,7 +505,6 @@ export default function Dashboard() {
   }, []);
 
   const [serviceOptions, setServiceOptions] = useState([
-
   ]);
 
   const handleReset = () => {
@@ -538,6 +562,62 @@ export default function Dashboard() {
     },
     true,
   );
+
+  const { refetch: fetchPerformaceStatsServicewise } = useFetch(
+    `${apiEndpoints.fetchPerformaceStatsServicewise}?serviceType=${selectedService}${date.from ? `&from=` + formatDateForBackend(date.from) : ""}${date.to ? "&to=" + formatDateForBackend(date.to) : ""}`,
+    {
+      onSuccess: (data) => {
+        if (data && data.data && data.success) {
+          if (data.data.length > 0) {
+            const report = data?.data?.[0]
+            const total = report.successTransaction + report.failedTransaction;
+            const successPercent = total > 0 ? ((report.successTransaction / total).toFixed(2)) : 0;
+            const failedPercent = total > 0 ? ((report.failedTransaction / total).toFixed(2)) : 0;
+
+            console.log(successPercent, failedPercent)
+            setPerformanceStatsServicewise({
+              successTransaction: report?.successTransaction || 0,
+              failedTransaction: report?.failedTransaction || 0,
+              successAmount: report?.successAmount || 0,
+              failedAmount: report?.failedAmount || 0,
+              successPercent: successPercent,
+              failedPercent: failedPercent
+            })
+          }
+          console.log(data)
+        }
+
+      },
+      onError: (error) => {
+        console.log("error in serviceReportsYearly data", error);
+        toast.error(handleValidationError(error) || "Something went wrong");
+      },
+    },
+    false,
+  );
+
+  const { refetch: fetchVolumeAnalyticsReport } = useFetch(
+    `${apiEndpoints.fetchVolumeAnalyticsReport}`,
+    {
+      onSuccess: (data) => {
+        if (data && data.data && data.success) {
+          setServiceVolumeData(data.data)
+        }
+
+      },
+      onError: (error) => {
+        console.log("error in volume Analytics Report data", error);
+        toast.error(handleValidationError(error) || "Something went wrong");
+      },
+    },
+    true,
+  );
+  useEffect(() => {
+    if (selectedService) {
+      fetchPerformaceStatsServicewise()
+    }
+  }, [selectedService, date])
+
   console.log(serviceReportsYearly)
   const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
 
@@ -761,8 +841,8 @@ export default function Dashboard() {
               className="bg-white rounded-[2.8rem] border border-slate-100 p-6 xs:p-8 shadow-sm flex flex-col group relative overflow-hidden lg:col-span-1"
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-lg font-black text-slate-800 tracking-tight">Today Performance</h4>
-                <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-blue-600 transition-colors">Details</span>
+                <h4 className="text-lg font-black text-slate-800 tracking-tight">{ServiceLabel(selectedService) || ""} Performance</h4>
+                {/* <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-blue-600 transition-colors">Details</span> */}
               </div>
 
               {/* Gauge Visualization */}
@@ -770,25 +850,32 @@ export default function Dashboard() {
                 <div className="w-full max-w-[340px] relative">
                   <svg viewBox="0 0 120 70" className="w-full h-full drop-shadow-sm">
                     <path d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#f1f5f9" strokeWidth="12" strokeLinecap="round" />
-                    <motion.path
-                      d="M 10 60 A 50 50 0 0 1 110 60" fill="none" stroke="#3d2b24" strokeWidth="12" strokeLinecap="round"
-                      initial={{ pathLength: 0 }} animate={{ pathLength: 0.72 }} transition={{ duration: 1.5, ease: "easeOut" }}
-                    />
+                    {performanceStatsServicewise?.successPercent >= 0.01 && <motion.path
+                      d="M 10 60 A 50 50 0 0 1 110 60"
+                      fill="none"
+                      stroke="#10B981"
+                      strokeWidth="12"
+                      strokeLinecap="round"
+                      initial={{ pathLength: 0 }}
+                      animate={{ pathLength: performanceStatsServicewise?.successPercent }}
+                      transition={{ duration: 1.5, ease: "easeOut" }}
+                    />}
+
                     <path d="M 25 60 A 35 35 0 0 1 95 60" fill="none" stroke="#f1f5f9" strokeWidth="12" strokeLinecap="round" />
-                    <motion.path
-                      d="M 25 60 A 35 35 0 0 1 95 60" fill="none" stroke="#ffb74d" strokeWidth="12" strokeLinecap="round"
-                      initial={{ pathLength: 0 }} animate={{ pathLength: 0.65 }} transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
-                    />
+                    {performanceStatsServicewise?.failedPercent >= 0.01 && <motion.path
+                      d="M 25 60 A 35 35 0 0 1 95 60" fill="none" stroke="#F43F5E" strokeWidth="12" strokeLinecap="round"
+                      initial={{ pathLength: 0 }} animate={{ pathLength: performanceStatsServicewise?.failedPercent }} transition={{ duration: 1.5, delay: 0.2, ease: "easeOut" }}
+                    />}
                   </svg>
 
                   {/* Center Labels Fixed */}
                   <div className="absolute top-[65%] left-1/2 -translate-x-1/2 flex flex-col items-center w-full text-center mt-2">
                     <div className="flex flex-col items-center gap-0">
                       <span className="text-lg xs:text-lg sm:text-xl font-black text-slate-900 tracking-tightest leading-tight">
-                        <span className="text-base xs:text-lg opacity-40 mr-1">₹</span>12,450
+                        <span className="text-base xs:text-lg mr-1">{formatToINR(performanceStatsServicewise?.successAmount || 0)}</span>
                       </span>
                     </div>
-                    <span className="text-[8px] xs:text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1">Today Revenue</span>
+                    <span className="text-[8px] xs:text-[11px] font-bold text-slate-400 uppercase tracking-[0.15em] mt-1">Total Success</span>
                   </div>
                 </div>
               </div>
@@ -798,14 +885,14 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center flex-wrap gap-x-4 gap-y-2">
                     <div className="flex items-center gap-1.5 min-w-fit">
-                      <div className="w-2 h-2 rounded-full bg-[#3d2b24]" />
-                      <span className="text-[11px] font-bold text-slate-600">Revenue</span>
-                      <span className="text-[10px] font-black text-emerald-500">↗ 25.9%</span>
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <span className="text-[11px] font-bold text-slate-600">Success Txn.</span>
+                      <span className="text-[10px] font-black text-emerald-500">{performanceStatsServicewise?.successTransaction || 0}</span>
                     </div>
                     <div className="flex items-center gap-1.5 min-w-fit">
-                      <div className="w-2 h-2 rounded-full bg-[#ffb74d]" />
-                      <span className="text-[11px] font-bold text-slate-600">Sale</span>
-                      <span className="text-[10px] font-black text-amber-500">↗ 20%</span>
+                      <div className="w-2 h-2 rounded-full bg-rose-500" />
+                      <span className="text-[11px] font-bold text-slate-600">Failed Txn.</span>
+                      <span className="text-[10px] font-black text-rose-500">{performanceStatsServicewise?.failedTransaction || 0}</span>
                     </div>
                   </div>
                 </div>
@@ -813,9 +900,9 @@ export default function Dashboard() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <div className="w-2 h-2 rounded-full bg-slate-300" />
-                    <span className="text-[11px] font-bold text-slate-500">Yesterday</span>
+                    <span className="text-[11px] font-bold text-slate-500">Failed Amount</span>
                   </div>
-                  <span className="text-[12px] font-black text-slate-700">₹ 8,120.50</span>
+                  <span className="text-[12px] font-black text-slate-700">{formatToINR(performanceStatsServicewise?.failedAmount || 0)}</span>
                 </div>
               </div>
             </motion.div>
@@ -850,50 +937,65 @@ export default function Dashboard() {
                   service.name !== "offline-service" &&
                   service.name !== "online-service"
               )
-              .map((stat, idx) => {
-                const serviceData = serviceStatsObj?.[stat.name];
-                const Icon = serviceData?.icon;
+              .map((pipeline, idx) =>
 
-                return (
-                  <motion.div
-                    key={stat.name || idx}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: idx * 0.08, duration: 0.6 }}
-                    className="bg-white/60 backdrop-blur-sm rounded-[2.5rem] p-4 md:p-6 border border-slate-100 flex flex-col group min-h-[220px] relative overflow-hidden transition-all duration-500"
-                  >
-                    <div className="flex items-center justify-between mb-8 z-10 ">
-                      <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 shadow-sm transition-all duration-500 group-hover:bg-blue-600 group-hover:text-white">
-                        {Icon && <Icon size={22} />}
-                      </div>
+                pipeline?.pipelineCodes?.map((pipelineCode, index) => {
+                  const stat = serviceVolumeData?.find(item => item.serviceType === pipelineCode) || {};
+                  const serviceData = serviceStatsObj?.[pipelineCode];
+                  const Icon = serviceData?.icon;
 
-                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
-                        {ServiceLabel(stat.name)}
-                      </span>
-                    </div>
+                  return (
+                    <motion.div
+                      key={pipelineCode || index}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: idx * 0.08, duration: 0.6 }}
+                      className="bg-white/60 backdrop-blur-sm rounded-[2.5rem] p-4 md:p-6 border border-slate-100 flex flex-col group min-h-[220px] relative overflow-hidden transition-all duration-500"
+                    >
+                      <div className="flex items-center justify-between mb-8 z-10 ">
+                        <div className="w-12 h-12 rounded-2xl bg-slate-50 text-slate-900 flex items-center justify-center border border-slate-100 shadow-sm transition-all duration-500 group-hover:bg-blue-600 group-hover:text-white">
+                          {Icon && <Icon size={22} />}
+                        </div>
 
-                    <div className="mt-auto z-10 flex flex-col gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <span className="text-[9px] font-black text-slate-400/70 uppercase tracking-widest">
-                          Volume
-                        </span>
-                        <p className="text-2xl font-black text-slate-900 tracking-tightest leading-none">
-                          ₹ {stat.amount || "0.00"}
-                        </p>
-                      </div>
-
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-50">
-                        <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
-                          Comm.
-                        </span>
-                        <span className="text-[11px] font-black text-emerald-600">
-                          ₹ {stat.commission || "0.00"}
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">
+                          {ServiceLabel(pipelineCode) || pipelineCode}
                         </span>
                       </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+
+                      <div className="mt-auto z-10 flex flex-col gap-5">
+                        <div className="flex flex-col gap-1.5">
+                          <span className="text-[9px] font-black text-slate-400/70 uppercase tracking-widest">
+                            Volume
+                          </span>
+                          <p className="text-2xl font-black text-slate-900 tracking-tightest leading-none">
+                            {formatToINR(stat?.totalVolume) || "0.00"}
+                          </p>
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="flex items-center justify-between  border-t border-slate-50">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                              Comm.
+                            </span>
+                            <span className="text-[11px] font-black text-emerald-600">
+                              {formatToINR(stat?.totalCommission) || "0.00"}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between  border-t border-slate-50">
+                            <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest leading-none">
+                              Charge.
+                            </span>
+                            <span className="text-[11px] font-black text-rose-600">
+                              {formatToINR(stat?.totalCharges) || "0.00"}
+                            </span>
+                          </div>
+                        </div>
+
+                      </div>
+                    </motion.div>
+                  );
+
+                })
+              )}
           </div>
         </div>
 
@@ -919,37 +1021,40 @@ export default function Dashboard() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 pb-4">
-            {profile?.assignedServices?.map((service, idx) => {
-              const ServiceIcon = serviceStaticData?.[service.name]?.icon || Zap;
-              const url = serviceStaticData?.[service.name]?.link || "/dashboard"
-              const serviceData = serviceStaticData?.[service.name] || { label: service.name, desc: "Access", gradient: "from-slate-400 to-slate-600" };
+            {profile?.assignedServices?.map((service, idx) =>
 
-              return (
-                <motion.div
-                  key={service._id || idx}
-                  initial={{ opacity: 0, y: 2 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + idx * 0.05 }}
-                  onClick={() => navigate(url)}
-                  whileHover={{ backgroundColor: "rgb(248 250 252)" }}
-                  className="relative overflow-hidden rounded-2xl p-3 sm:p-4 border border-slate-100 bg-white flex items-center justify-between cursor-pointer group transition-all duration-300 shadow-xs hover:shadow-sm"
-                >
-                  <div className="flex items-center gap-3 sm:gap-4 relative z-10">
-                    <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${serviceData.gradient} flex items-center justify-center text-white transition-all shadow-md group-hover:scale-105 duration-500`}>
-                      <ServiceIcon size={18} className="sm:size-5" />
-                    </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[13px] sm:text-sm font-black text-slate-800 leading-none truncate group-hover:text-blue-600 transition-colors">{serviceData.label}</span>
-                      <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5 truncate">{serviceData.desc}</p>
-                    </div>
-                  </div>
+              service?.pipelineCodes?.map((pipeline, index) => {
+                const ServiceIcon = serviceStaticData?.[pipeline]?.icon || Zap;
+                const url = serviceStaticData?.[pipeline]?.link || "/dashboard"
+                const serviceData = serviceStaticData?.[pipeline] || { label: pipeline, desc: "Access", gradient: "from-slate-400 to-slate-600" };
 
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-slate-50 text-slate-300 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shrink-0">
-                    <ChevronRight size={14} className="sm:size-4" />
-                  </div>
-                </motion.div>
-              )
-            })}
+                return (
+                  <motion.div
+                    key={`${service._id || idx}-${pipeline}-${index}`}
+                    initial={{ opacity: 0, y: 2 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.1 + idx * 0.05 }}
+                    onClick={() => navigate(url)}
+                    whileHover={{ backgroundColor: "rgb(248 250 252)" }}
+                    className="relative overflow-hidden rounded-2xl p-3 sm:p-4 border border-slate-100 bg-white flex items-center justify-between cursor-pointer group transition-all duration-300 shadow-xs hover:shadow-sm"
+                  >
+                    <div className="flex items-center gap-3 sm:gap-4 relative z-10">
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${serviceData.gradient} flex items-center justify-center text-white transition-all shadow-md group-hover:scale-105 duration-500`}>
+                        <ServiceIcon size={18} className="sm:size-5" />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[13px] sm:text-sm font-black text-slate-800 leading-none truncate group-hover:text-blue-600 transition-colors">{serviceData.label}</span>
+                        <p className="text-[9px] sm:text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1.5 truncate">{serviceData.desc}</p>
+                      </div>
+                    </div>
+
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-lg bg-slate-50 text-slate-300 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-all duration-300 shrink-0">
+                      <ChevronRight size={14} className="sm:size-4" />
+                    </div>
+                  </motion.div>
+                )
+              })
+            )}
           </div>
         </div>
 

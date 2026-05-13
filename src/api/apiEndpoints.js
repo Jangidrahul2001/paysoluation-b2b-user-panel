@@ -34,6 +34,8 @@ export const apiEndpoints = {
   //dashboard
   fetchTopupDetailsStats: "/user/dashboard/topup-stats",
   fetchServiceReportsYearly: "/user/dashboard/payout-stats?serviceType=xpress",
+  fetchPerformaceStatsServicewise: "/user/dashboard/performance-stats",
+  fetchVolumeAnalyticsReport:"/user/dashboard/volume-analytics",
 
   // service
   fetchServiceWithPipeline: "/user/service/list",
@@ -94,6 +96,10 @@ export const apiEndpoints = {
   onboardByCoupon: "/user/coupon/redeem-coupon",
   onboardByCoupon: "/user/coupon/redeem-coupon",
   onBoardOffline: "user/charge/add-id-charge-request",
+
+  // commission report
+  commissionReport: "/user/commissionReport/reports",
+  fetchCommissionStats: "/user/commissionReport/stats",
 
   // service wiserequest recharge
 

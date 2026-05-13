@@ -669,7 +669,7 @@ export default function WalletLedger() {
     >
       {/* Stats Summary Grid - Granular Step Down: 6-5-4-3-2-1 */}
       <div className="grid grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-4 px-2 mb-2">
-        <StatCard
+        {/* <StatCard
           label="Total Success"
           count={stats.success.count}
           amount={stats.success.amount}
@@ -696,7 +696,7 @@ export default function WalletLedger() {
           amount={stats.refund.amount}
           type="refund"
           icon={RefreshCw}
-        />
+        /> */}
 
         <StatCard
           label="Total Commission"
