@@ -265,11 +265,11 @@ const KYCSubmission = () => {
             localStorage.removeItem('isAuthenticated');
             navigate("/login", { replace: true });
           }
-          if (data?.data?.idPaymentStatus && (data?.data?.idPaymentStatus === "pending" || data?.data?.idPaymentStatus === "rejected")) {
+          if (data?.data?.isPaymentRequired && data?.data?.idPaymentStatus && (data?.data?.idPaymentStatus === "pending" || data?.data?.idPaymentStatus === "rejected")) {
 
             navigate("/onboarding-charges", { state: { isKycOnline: data.data.isKycOnline, onBoardCharge: data.data.onBoardCharge } });
           }
-          else if (data?.data?.idPaymentStatus && data?.data?.idPaymentStatus === "complete") {
+          else if (data?.data?.isPaymentRequired && data?.data?.idPaymentStatus && data?.data?.idPaymentStatus === "complete") {
 
             navigate("/onboarding-pending");
           }
