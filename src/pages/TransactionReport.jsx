@@ -358,7 +358,7 @@ export default function TransactionReport() {
       accessorKey: "gstAmount",
       center: true,
       cell: ({ row }) => <span className="text-[12px] 
-       text-slate-500">{formatToINR(row.original.gstAmount)}</span>
+       text-slate-500">{formatToINR(row.original.gstAmount || row.original.gst)}</span>
     },
     {
       header: "TDS",

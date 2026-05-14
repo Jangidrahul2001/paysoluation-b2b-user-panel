@@ -425,14 +425,14 @@ export default function TransactionDetailPage() {
 
         {/* --- DYNAMIC HEADER TILES --- */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard label="Amount" value={data.amount} subLabel="Recharge Value" icon={CreditCard} variant="dark" />
+          <MetricCard label="Amount" value={formatToINR(data.amount)} subLabel="Recharge Value" icon={CreditCard} variant="dark" />
           <MetricCard label="Status" value={data.txnStatus} subLabel="Current Pool" icon={Activity} variant={data.txnStatus === 'success' ? "emerald" : data.txnStatus === 'failed' ? "rose" : "yellow"} />
-          {data.commission !== undefined && <MetricCard label="Commission" value={data.commission} subLabel="Yield Earnt" icon={Zap} variant="blue" />}
+          {data.commission !== undefined && <MetricCard label="Commission" value={formatToINR(data.commission)} subLabel="Yield Earnt" icon={Zap} variant="blue" />}
 
-          {data.charge !== undefined && <MetricCard label="Charge" value={data.charge} subLabel="Yield Earnt" icon={Zap} variant="rose" />}
-          {data.gst !== undefined && <MetricCard label="GST" value={data.gst} subLabel="Regulatory Tax" icon={ShieldCheck} variant="blue" />}
-          {data.tds !== undefined && <MetricCard label="TDS" value={data.tds} subLabel="Regulatory Tax" icon={ShieldCheck} variant="blue" />}
-          {data.totalAmount !== undefined && <MetricCard label="Total Amount" value={data.totalAmount} subLabel="Total Amount" icon={ShieldCheck} variant="dark" />}
+          {data.charge !== undefined && <MetricCard label="Charge" value={formatToINR(data.charge)} subLabel="Yield Earnt" icon={Zap} variant="rose" />}
+          {data.gst !== undefined && <MetricCard label="GST" value={formatToINR(data?.gst)} subLabel="Regulatory Tax" icon={ShieldCheck} variant="blue" />}
+          {data.tds !== undefined && <MetricCard label="TDS" value={formatToINR(data.tds)} subLabel="Regulatory Tax" icon={ShieldCheck} variant="blue" />}
+          {data.totalAmount !== undefined && <MetricCard label="Total Amount" value={formatToINR(data.totalAmount)} subLabel="Total Amount" icon={ShieldCheck} variant="dark" />}
         </div>
 
         {/* --- MAIN CONTENT GRID --- */}

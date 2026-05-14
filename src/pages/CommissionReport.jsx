@@ -22,8 +22,9 @@ import { CustomDualCalendar } from "../components/dashboard/CustomDualCalendar";
 import { useFetch } from "../hooks/useFetch";
 import { apiEndpoints } from '../api/apiEndpoints';
 import { toast } from 'sonner';
-import { formatDate, formatDateForBackend, formatToINR, handleValidationError } from '../utils/helperFunction';
+import { formatDate, formatDateForBackend, formatToINR, handleValidationError, ServiceLabel } from '../utils/helperFunction';
 import ExpandableMessage from '../components/ui/ExpandableMessage';
+import { useSelector } from 'react-redux';
 
 const StatCard = ({
   label,
@@ -115,32 +116,20 @@ export default function CommissionReport() {
   const [serviceOptions, setServiceOptions] = useState([]);
   const [stats, setStats] = useState({});
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 1024;
+  const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
 
   useClickOutside(calendarRef, () => setIsCalendarOpen(false));
 
-  // Fetch services for dropdown
-  const { refetch: fetchServices } = useFetch(
-    apiEndpoints.allServiceList,
-    {
-      onSuccess: (data) => {
-        if (data.success) {
-          const services = [
-            { label: "All Services", value: "All" },
-            ...data.data.map(service => ({
-              label: service.name || service.serviceName,
-              value: service.name || service.serviceName
-            }))
-          ];
-          setServiceOptions(services);
-        }
-      },
-      onError: (error) => {
-        console.log("Error fetching services:", error);
-        toast.error(handleValidationError(error) || "Failed to fetch services");
-      }
-    },
-    true
-  );
+  useEffect(() => {
+    if (profile && profile?.assignedServices && profile?.assignedServices?.length > 0) {
+      const services = profile?.assignedServices?.map((service) =>
+        service.pipelineCodes?.map((code) => {
+          return { value: code, label: ServiceLabel(code) }
+        }))
+      setServiceOptions([{ value: "", label: "All Services" }, ...services.flat()]);
+    }
+  }, [profile?.assignedServices])
+
 
   const { refetch: fetchCommissionStats } = useFetch(
     `${apiEndpoints.fetchCommissionStats}?service=${serviceFilter === "All" ? "" : serviceFilter}${date.from ? `&from=${formatDateForBackend(date.from)}` : ""}${date.to ? `&to=${formatDateForBackend(date.to)}` : ""}`,
@@ -255,6 +244,7 @@ export default function CommissionReport() {
         header: "SERVICES NAME",
         accessorKey: "serviceType",
         className: "whitespace-nowrap min-w-[140px]",
+        center: true,
         cell: ({ row }) => (
           <span className="text-[11px]  text-slate-800 uppercase tracking-tight">
             {row.original.serviceType || "---"}

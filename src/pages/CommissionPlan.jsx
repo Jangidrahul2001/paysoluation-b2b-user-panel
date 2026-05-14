@@ -91,8 +91,8 @@ const CommissionTableSection = ({ title, icon = Banknote, data, pipeline = "", h
           <h2 className="text-[13px] font-black text-slate-900 uppercase tracking-[0.2em] leading-none">{title} Structures</h2>
         </div>
 
-        <div className="px-4 py-1.5 me-2 rounded-lg text-center bg-purple-100/50 text-purple-600 text-[10px] font-black tracking-widest border border-purple-200 ">
-          Pipeline : {pipeline}
+        <div className="px-4 py-1.5 me-2 rounded-lg text-center bg-indigo-100/50 text-indigo-600 text-[10px] font-black tracking-widest border border-indigo-200 ">
+          Pipeline : {ServiceLabel(pipeline) || pipeline}
         </div>
       </div>
       <DataTable

@@ -5,6 +5,7 @@ import {
   Route,
   Navigate,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import { LazyMotion, domMax, AnimatePresence } from "framer-motion";
 import { GlobalToaster } from "./components/ui/Global-toast";
@@ -88,6 +89,15 @@ import NotFound from "./pages/NotFound";
 import { LoadingScreen } from "./components/layout/LoadingScreen";
 
 import MainLayout from "./components/layout/MainLayout";
+const NavigateSetup = () => {
+  const navigate = useNavigate();
+  
+  useEffect(() => {
+    setNavigateFunction(navigate);
+  }, [navigate]);
+
+  return null;
+};
 
 function AnimatedRoutes() {
 
@@ -217,6 +227,7 @@ import { WelcomeScreen } from "./components/layout/WelcomeScreen";
 import { NavigationGuard } from "./components/layout/NavigationGuard";
 import OtpVerification from "./pages/DMT/OtpVerification";
 import UpiPayout from "./pages/UpiPayout";
+import { setNavigateFunction } from "./api/api";
 // import ReceiptModal from "./components/rechargeReceiptModal";
 // import ReceiptModal from "./modal/RecieptModal";
 
