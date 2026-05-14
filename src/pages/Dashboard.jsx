@@ -444,6 +444,7 @@ function BannerSlider() {
 // --- Main Page Component ---
 
 export default function Dashboard() {
+  const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
   const navigate = useNavigate()
   // Calendar & Report State
   const [date, setDate] = useState({
@@ -513,27 +514,18 @@ export default function Dashboard() {
   const handleSearch = () => {
     console.log("Filtering dashboard overview for:", date);
   };
-  const { refetch: fetchServicesList } = useFetch(
-    `${apiEndpoints.allServiceList}`,
-    {
-      onSuccess: (data) => {
-        if (data && data.data && data.success) {
-          const temp = data.data.map((item) => ({ ...item, label: item.label, value: item.name }))
-          setServiceOptions(temp)
-          if (temp.length > 0) {
-            setSelectedService(temp[0].name)
-          }
 
-          console.log(data)
-        }
-      },
-      onError: (error) => {
-        console.log("error in servicesList data", error);
-        toast.error(handleValidationError(error) || "Something went wrong");
-      },
-    },
-    true,
-  );
+  useEffect(() => {
+    if (profile && profile?.assignedServices && profile?.assignedServices?.length > 0) {
+      const services = profile?.assignedServices?.map((service) =>
+        service.pipelineCodes?.map((code) => {
+          return { value: code, label: ServiceLabel(code) }
+        }))
+      setServiceOptions([{ value: "", label: "All Services" }, ...services.flat()]);
+    }
+  }, [profile?.assignedServices])
+
+
 
   const { refetch: fetchServiceReportsYearly } = useFetch(
     `${apiEndpoints.fetchServiceReportsYearly}`,
@@ -586,9 +578,36 @@ export default function Dashboard() {
           }
           console.log(data)
         }
+        if (selectedService === "") {
+          if (data && data.overall && data.success) {
+            const report = data?.overall
+            const total = report.successTransaction + report.failedTransaction;
+            const successPercent = total > 0 ? ((report.successTransaction / total).toFixed(2)) : 0;
+            const failedPercent = total > 0 ? ((report.failedTransaction / total).toFixed(2)) : 0;
+
+            setPerformanceStatsServicewise({
+              successTransaction: report?.successTransaction || 0,
+              failedTransaction: report?.failedTransaction || 0,
+              successAmount: report?.successAmount || 0,
+              failedAmount: report?.failedAmount || 0,
+              successPercent: successPercent,
+              failedPercent: failedPercent
+            })
+
+          }
+
+        }
 
       },
       onError: (error) => {
+        setPerformanceStatsServicewise({
+          successTransaction: 0,
+          failedTransaction: 0,
+          successAmount: 0,
+          failedAmount: 0,
+          successPercent: 0,
+          failedPercent: 0
+        })
         console.log("error in serviceReportsYearly data", error);
         toast.error(handleValidationError(error) || "Something went wrong");
       },
@@ -613,13 +632,11 @@ export default function Dashboard() {
     true,
   );
   useEffect(() => {
-    if (selectedService) {
-      fetchPerformaceStatsServicewise()
-    }
+    fetchPerformaceStatsServicewise()
   }, [selectedService, date])
 
   console.log(serviceReportsYearly)
-  const { data: profile, error: profileError, loading: profileLoading } = useSelector((state) => state.profile);
+
 
 
 
@@ -841,7 +858,7 @@ export default function Dashboard() {
               className="bg-white rounded-[2.8rem] border border-slate-100 p-6 xs:p-8 shadow-sm flex flex-col group relative overflow-hidden lg:col-span-1"
             >
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-lg font-black text-slate-800 tracking-tight">{ServiceLabel(selectedService) || ""} Performance</h4>
+                <h4 className="text-lg font-black text-slate-800 tracking-tight">{selectedService === "" ? "Overall" : ServiceLabel(selectedService) || ""} Performance</h4>
                 {/* <span className="text-[10px] font-bold text-slate-400 cursor-pointer hover:text-blue-600 transition-colors">Details</span> */}
               </div>
 

@@ -38,7 +38,7 @@ import { Button } from "../components/ui/Button";
 import { useFetch } from "../hooks/useFetch";
 import { apiEndpoints } from "../api/apiEndpoints";
 import { cn } from "../lib/utils";
-import { formatDate, formatToINR, handleValidationError, } from "../utils/helperFunction";
+import { capitalize, formatDate, formatToINR, handleValidationError, } from "../utils/helperFunction";
 import { toast } from "sonner";
 
 
@@ -47,17 +47,10 @@ export default function AllTransactions() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isLoading, setIsLoading] = useState(false)
   const [transactions, setTransactions] = useState([])
-  // const [pageIndex, setPageIndex] = useState(1);
-  // const [pageSize, setPageSize] = useState(10);
-  // const [statusFilter, setStatusFilter] = useState("All");
-  // const [serviceFilter, setServiceFilter] = useState("All");
   const [columnVisibility, setColumnVisibility] = useState({});
   const searchInputRef = useRef(null);
-  // const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  // const [date, setDate] = useState({ from: null, to: null });
   const [isMobile, setIsMobile] = useState(window.innerWidth < 640);
   const calendarRef = useRef(null);
-  // useClickOutside(calendarRef, () => setIsCalendarOpen(false), "#mobile-calendar-portal");
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 640);
@@ -98,40 +91,28 @@ export default function AllTransactions() {
   );
 
 
-  // const {
-  //   data: txnData,
-  //   loading: isLoading,
-  //   refetch,
-  // } = useFetch(
-  //   `${apiEndpoints.transactionSearch}?page=${pageIndex}&limit=${pageSize}&search=${searchTerm}&status=${statusFilter === "All" ? "" : statusFilter}&service=${serviceFilter === "All" ? "" : serviceFilter}`,
-  //   {},
-  //   true
-  // );
+
 
   const handleReset = () => {
     setSearchTerm("")
     setTransactions([])
-    // setSearchTerm("");
-    // setStatusFilter("All");
-    // setServiceFilter("All");
-    // setDate({ from: null, to: null });
-    // setPageIndex(1);
-    // refetch();
   };
 
   const handleSearch = () => {
     setIsLoading(true)
     fetchTransactions()
-    // setPageIndex(1);
-    // refetch();
+
   };
 
 
 
   // Detailed Transaction Card Component
   const TransactionCard = ({ txn, index }) => {
-    const status = txn.status?.toLowerCase() || "pending";
+   const status = txn?.entryType?.toLowerCase() || txn?.status?.toLowerCase() || "pending";
     const config = {
+      refund:{ bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/50", dot: "bg-amber-500", label: "REFUND" },
+      charge: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/50", dot: "bg-rose-500", label: "CHARGE" },
+      commission: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/50", dot: "bg-emerald-500", label: "COMMISSION" },
       success: { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200/50", dot: "bg-emerald-500", label: "SUCCESS" },
       failed: { bg: "bg-rose-50", text: "text-rose-700", border: "border-rose-200/50", dot: "bg-rose-500", label: "FAILED" },
       pending: { bg: "bg-amber-50", text: "text-amber-700", border: "border-amber-200/50", dot: "bg-amber-500", label: "PENDING" },
@@ -148,9 +129,9 @@ export default function AllTransactions() {
         className="relative bg-white rounded-[2rem] border border-slate-200 p-7 mb-6 shadow-sm transition-all duration-500"
       >
         <div className="flex flex-col md:flex-row justify-between items-start gap-8">
-          <div className="flex-1 space-y-5">
+          <div className="flex-1 ">
             {/* Top row: Status & ID */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center space-x-2 space-y-2">
               <span className={cn(
                 "px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all",
                 config.bg, config.text, config.border
@@ -166,27 +147,11 @@ export default function AllTransactions() {
               </span>
             </div>
 
-            {/* Middle row: Service Info */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              <div className="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                Service: <span className="text-slate-900">{txn.serviceType || ""}</span>
-              </div>
-              {txn.category &&
-                <div className="px-4 py-1.5 rounded-xl bg-slate-50 border border-slate-200 text-[10px] font-black text-slate-600 uppercase tracking-widest flex items-center gap-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                  Category: <span className="text-slate-700">{txn.category || ""}</span>
-                </div>
-              }
-            </div>
           </div>
 
           {/* Right Section: Status & Amount */}
-          <div className="flex flex-col items-end gap-1.5 md:min-w-[140px]">
-            <div className="px-4 py-1.5 rounded-full border border-slate-100/80 text-[10px] font-black uppercase tracking-[0.15em] text-slate-400 flex items-center gap-2.5 bg-slate-50/20">
-              <span className={cn("w-1.5 h-1.5 rounded-full shadow-sm", config.dot)} />
-              {status}
-            </div>
+          <div className="flex flex-col items-end  md:min-w-[140px]">
+
             <h3 className="text-[28px] font-black text-slate-900 tracking-tight leading-none mt-2 tabular-nums">
               {formatToINR(txn.amount || 0)}
             </h3>
@@ -194,41 +159,115 @@ export default function AllTransactions() {
         </div>
 
         {/* Info Grid Section */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mt-8">
+        <div className="grid sm:grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 2xl:grid-cols-4 gap-5 mt-8">
+          {/* Service  Details */}
+          <div className="bg-gradient-to-br from-indigo-50/80 to-white border border-indigo-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-indigo-100/20">
+            <h4 className="text-[10px] font-black text-blue-600 uppercase tracking-[0.2em] flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(79,70,229,0.3)]" />
+              Service Details
+            </h4>
+            <div className="space-y-2">
+
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight" >Service</span>
+                <span title={txn?.serviceType || "---"} className="truncate max-w-[150px]">{capitalize(txn?.serviceType) || "--"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight" >Category</span>
+                <span className="truncate max-w-[150px]" title={txn?.category || txn?.serviceCategory || "---"}>{txn?.category || txn?.serviceCategory || "---"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight">Type</span>
+                <span className={`${txn.type?.toLowerCase() === "debit" ? "text-rose-600" : "text-emerald-600"} truncate max-w-[150px]`} title={txn.type || "---"}>{capitalize(txn.type) || "---"}</span>
+              </p>
+
+            </div>
+          </div>
           {/* Merchant Details */}
           <div className="bg-gradient-to-br from-indigo-50/80 to-white border border-indigo-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-indigo-100/20">
             <h4 className="text-[10px] font-black text-indigo-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(79,70,229,0.3)]" />
               Merchant Details
             </h4>
-            <div className="space-y-3">
-              <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between">
+            <div className="space-y-2">
+
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight" >Name</span>
+                <span title={txn?.fullName || "---"} className="truncate max-w-[150px]">{capitalize(txn?.fullName) || "--"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                <span className="text-slate-400 font-medium tracking-tight" >User Name</span>
+                <span className="truncate max-w-[150px]" title={txn?.userName || "---"}>{txn?.userName || "--"}</span>
+              </p>
+              <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
                 <span className="text-slate-400 font-medium tracking-tight">Mobile</span>
                 <span>{txn.phone || "--"}</span>
               </p>
-              <p className="text-[12px] font-bold text-slate-900 flex items-center justify-between gap-4">
-                <span className="text-slate-400 font-medium tracking-tight">Email</span>
-                <span className="truncate max-w-[150px] text-right text-indigo-900" title={txn.email || "--"}>
-                  {txn.email || "--"}
-                </span>
-              </p>
+
             </div>
           </div>
 
-          {/* Account */}
+
           <div className="bg-gradient-to-br from-emerald-50/80 to-white border border-emerald-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-emerald-100/20">
             <h4 className="text-[10px] font-black text-emerald-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.3)]" />
-              Account
+              Request Details
             </h4>
-            <div className="h-[60px] flex flex-col justify-center">
-              <p className="text-[15px] font-black text-slate-900 tracking-wider font-mono">{txn.account || "---"}</p>
-              <p className="text-[9px] font-bold text-emerald-500 uppercase tracking-widest mt-1">Beneficiary Node</p>
+            <div className="space-y-2">
+              {txn?.metaRequestDetails?.operatorName &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Operator Name</span>
+                  <span title={txn?.metaRequestDetails?.operatorName || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.operatorName || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.mobileNumber &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Mobile Number</span>
+                  <span title={txn?.metaRequestDetails?.mobileNumber || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.mobileNumber || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.beneficiaryName &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Beneficiary Name</span>
+                  <span title={txn?.metaRequestDetails?.beneficiaryName || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.beneficiaryName || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.beneficiaryAccount &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Account</span>
+                  <span title={txn?.metaRequestDetails?.beneficiaryAccount || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.beneficiaryAccount || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.beneficiaryIfsc &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >IFSC</span>
+                  <span title={txn?.metaRequestDetails?.beneficiaryIfsc || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.beneficiaryIfsc || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.billNumber &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Bill Number</span>
+                  <span title={txn?.metaRequestDetails?.billNumber || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.billNumber || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.billPeriod &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Bill Period</span>
+                  <span title={txn?.metaRequestDetails?.billPeriod || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.billPeriod || "--"}</span>
+                </p>
+              }
+              {txn?.metaRequestDetails?.["Mobile Number"] &&
+                <p className="text-[12px] font-bold text-slate-700 flex items-center justify-between">
+                  <span className="text-slate-400 font-medium tracking-tight" >Mobile Number</span>
+                  <span title={txn?.metaRequestDetails?.["Mobile Number"] || "---"} className="truncate max-w-[150px]">{txn?.metaRequestDetails?.["Mobile Number"] || "--"}</span>
+                </p>
+              }
+
             </div>
           </div>
 
-          {/* Bank UTR */}
-          <div className="bg-gradient-to-br from-sky-50/80 to-white border border-sky-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-sky-100/20">
+
+          {/* <div className="bg-gradient-to-br from-sky-50/80 to-white border border-sky-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-sky-100/20">
             <h4 className="text-[10px] font-black text-sky-600 uppercase tracking-[0.2em] flex items-center gap-2">
               <div className="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.3)]" />
               Bank UTR
@@ -237,7 +276,7 @@ export default function AllTransactions() {
               <p className="text-[15px] font-black text-slate-900 tracking-wider font-mono">{txn.utr || txn.bankUtr || "---"}</p>
               <p className="text-[9px] font-bold text-sky-500 uppercase tracking-widest mt-1">Network Ref</p>
             </div>
-          </div>
+          </div> */}
 
           {/* Remark */}
           <div className="bg-gradient-to-br from-amber-50/80 to-white border border-amber-100/80 rounded-[2rem] p-5 space-y-3.5 transition-all shadow-sm shadow-amber-100/20">
@@ -263,131 +302,6 @@ export default function AllTransactions() {
     <PageLayout
       title="Smart Transaction Search"
       subtitle="Search a single transaction from your user panel."
-      // actions={
-      //   <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
-      //     {/* Service Dropdown */}
-      //     <div className="flex-1 sm:flex-none sm:w-[160px] min-w-[140px]">
-      //       <Select
-      //         options={[
-      //           { label: "All Services", value: "All" },
-      //           { label: "Mobile Recharge", value: "Recharge" },
-      //           { label: "DTH Recharge", value: "DTH" },
-      //           { label: "Bill Payment", value: "BBPS" },
-      //           { label: "Money Transfer", value: "DMT" },
-      //           { label: "AEPS Withdrawal", value: "AEPS" },
-      //         ]}
-      //         value={serviceFilter}
-      //         onChange={(val) => setServiceFilter(val)}
-      //         placeholder="Service"
-      //         className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[13px] !font-bold"
-      //       />
-      //     </div>
-
-      //     {/* Status Dropdown */}
-      //     <div className="flex-1 sm:flex-none sm:w-[150px] min-w-[130px]">
-      //       <Select
-      //         options={[
-      //           { label: "All Status", value: "All" },
-      //           { label: "Success", value: "SUCCESS" },
-      //           { label: "Pending", value: "PENDING" },
-      //           { label: "Failed", value: "FAILED" },
-      //         ]}
-      //         value={statusFilter}
-      //         onChange={(val) => setStatusFilter(val)}
-      //         placeholder="Select Filter"
-      //         className="!rounded-xl !h-10 !border-slate-200 shadow-sm !bg-white !px-4 !text-[13px] !font-bold"
-      //       />
-      //     </div>
-
-      //     {/* Date Picker Trigger */}
-      //     <div className="relative w-full sm:w-auto" ref={calendarRef}>
-      //       <div
-      //         onClick={() => setIsCalendarOpen(!isCalendarOpen)}
-      //         className={cn(
-      //           "h-10 px-4 bg-white border border-slate-200 rounded-xl flex items-center justify-between sm:justify-start gap-2.5 text-[13px] font-bold text-slate-700 shadow-sm cursor-pointer hover:border-indigo-500/50 hover:bg-slate-50 transition-all group select-none",
-      //           !date?.from && "text-slate-400",
-      //           isCalendarOpen && "border-indigo-500 ring-4 ring-indigo-500/10"
-      //         )}
-      //       >
-      //         <div className="flex items-center gap-2.5">
-      //           <CalendarIcon className="w-4 h-4 text-slate-600 group-hover:text-indigo-600 transition-colors" />
-      //           <span className="whitespace-nowrap">
-      //             {date?.from ? (
-      //               date.to ? (
-      //                 <>
-      //                   {format(date.from, "LLL dd, y")} - {format(date.to, "LLL dd, y")}
-      //                 </>
-      //               ) : (
-      //                 format(date.from, "LLL dd, y")
-      //               )
-      //             ) : (
-      //               "Pick a date range"
-      //             )}
-      //           </span>
-      //         </div>
-      //         <ChevronDown className={cn(
-      //           "w-3.5 h-3.5 transition-all duration-300 ml-1",
-      //           isCalendarOpen ? "rotate-180 text-indigo-600" : "text-slate-300"
-      //         )} />
-      //       </div>
-
-      //       <AnimatePresence>
-      //         {isCalendarOpen && !isMobile && (
-      //           <motion.div
-      //             {...butteryDropdown}
-      //             className="absolute right-0 top-full mt-2 z-[9999] origin-top-right shadow-2xl rounded-2xl border border-slate-100 bg-white overflow-hidden ring-1 ring-slate-200/50 hidden sm:block"
-      //             style={{ width: "max-content", maxWidth: "94vw" }}
-      //           >
-      //             <CustomDualCalendar
-      //               date={date}
-      //               setDate={setDate}
-      //               onApply={() => setIsCalendarOpen(false)}
-      //               onReset={() => {
-      //                 setDate({ from: null, to: null });
-      //                 setIsCalendarOpen(false);
-      //               }}
-      //             />
-      //           </motion.div>
-      //         )}
-      //       </AnimatePresence>
-
-      //       {/* Mobile Calendar Portal */}
-      //       {createPortal(
-      //         <AnimatePresence>
-      //           {isCalendarOpen && isMobile && (
-      //             <div id="mobile-calendar-portal" className="fixed inset-0 z-[99999] sm:hidden">
-      //               <motion.div
-      //                 initial={{ opacity: 0 }}
-      //                 animate={{ opacity: 1 }}
-      //                 exit={{ opacity: 0 }}
-      //                 onClick={() => setIsCalendarOpen(false)}
-      //                 className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-      //               />
-      //               <motion.div
-      //                 initial={{ y: "100%" }}
-      //                 animate={{ y: 0 }}
-      //                 exit={{ y: "100%" }}
-      //                 transition={{ type: "spring", damping: 22, stiffness: 350, mass: 0.5 }}
-      //                 className="absolute bottom-0 left-0 right-0 bg-white overflow-hidden rounded-t-3xl shadow-[0_-10px_40px_rgba(0,0,0,0.1)] origin-bottom"
-      //               >
-      //                 <CustomDualCalendar
-      //                   date={date}
-      //                   setDate={setDate}
-      //                   onApply={() => setIsCalendarOpen(false)}
-      //                   onReset={() => {
-      //                     setDate({ from: null, to: null });
-      //                     setIsCalendarOpen(false);
-      //                   }}
-      //                 />
-      //               </motion.div>
-      //             </div>
-      //           )}
-      //         </AnimatePresence>,
-      //         document.body
-      //       )}
-      //     </div>
-      //   </div>
-      // }
       className="max-w-[1600px] mx-auto py-4"
     >
       <div className="flex flex-col gap-6">

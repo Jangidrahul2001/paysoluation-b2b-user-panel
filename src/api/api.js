@@ -1,6 +1,13 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 
+let navigateFunction = null;
+
+// Function to set the navigate function
+export const setNavigateFunction = (navigate) => {
+  navigateFunction = navigate;
+};
+
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   headers: {
@@ -41,10 +48,25 @@ api.interceptors.response.use(
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
       localStorage.removeItem("isAuthenticated");
-      
-      if (window.location.pathname !== `/login` && window.location.pathname !== `/signup`) {
-        window.location.href = `/login`;
-      }    
+
+        if (
+        (window.location.pathname !== `${import.meta.env.VITE_BASENAME}/login` || window.location.pathname !== `${import.meta.env.VITE_BASENAME}/signup`) &&
+        import.meta.env.VITE_BASENAME != "/"
+      ) {
+        if (navigateFunction) {
+          navigateFunction(`/login`);
+        } else {
+          window.location.href = `${import.meta.env.VITE_BASENAME}/login`;
+        }
+      } else if (
+        window.location.pathname !== `${import.meta.env.VITE_BASENAME}login`|| window.location.pathname !== `${import.meta.env.VITE_BASENAME}signup`
+      ) {
+        if (navigateFunction) {
+          navigateFunction("/login");
+        } else {
+          window.location.href = `/login`;
+        }
+      }      
 
       return Promise.reject({
         success: false,
